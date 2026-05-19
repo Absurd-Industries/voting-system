@@ -1,0 +1,117 @@
+import { Hono } from 'hono'
+import { getConference, getTalksWithVoteCounts } from '../../db/queries.js'
+import type { Bindings, Variables } from '../../index.js'
+
+const adminTalks = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+adminTalks.get('/', async (c) => {
+  const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured' }, 404)
+
+  const { results } = await getTalksWithVoteCounts(c.env.DB, conf.id)
+  return c.json(results)
+})
+
+adminTalks.post('/', async (c) => {
+  const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured' }, 404)
+
+  const body = await c.req.json<{
+    title: string
+    description?: string
+    duration_minutes: number
+    presenter_name: string
+    presenter_bio?: string
+    presenter_email?: string
+  }>()
+
+  const errors: string[] = []
+  if (!body.title?.trim()) errors.push('title is required')
+  if (!body.presenter_name?.trim()) errors.push('presenter_name is required')
+  if (!Number.isInteger(body.duration_minutes) || body.duration_minutes <= 0) {
+    errors.push('duration_minutes must be a positive integer')
+  }
+  if (errors.length > 0) return c.json({ error: errors.join(', ') }, 422)
+
+  const id = crypto.randomUUID()
+  await c.env.DB.prepare(`
+    INSERT INTO talks (id, conference_id, title, description, duration_minutes, presenter_name, presenter_bio, presenter_email, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    id, conf.id,
+    body.title.trim(),
+    body.description ?? null,
+    body.duration_minutes,
+    body.presenter_name.trim(),
+    body.presenter_bio ?? null,
+    body.presenter_email ?? null,
+    Date.now()
+  ).run()
+
+  const talk = await c.env.DB.prepare('SELECT * FROM talks WHERE id = ?').bind(id).first()
+  return c.json(talk, 201)
+})
+
+adminTalks.put('/:id', async (c) => {
+  const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured' }, 404)
+
+  const talkId = c.req.param('id')
+  const existing = await c.env.DB.prepare(
+    'SELECT id FROM talks WHERE id = ? AND conference_id = ?'
+  ).bind(talkId, conf.id).first()
+  if (!existing) return c.json({ error: 'Talk not found' }, 404)
+
+  const body = await c.req.json<{
+    title?: string
+    description?: string
+    duration_minutes?: number
+    presenter_name?: string
+    presenter_bio?: string
+    presenter_email?: string
+  }>()
+
+  if (body.duration_minutes !== undefined && (!Number.isInteger(body.duration_minutes) || body.duration_minutes <= 0)) {
+    return c.json({ error: 'duration_minutes must be a positive integer' }, 422)
+  }
+
+  await c.env.DB.prepare(`
+    UPDATE talks SET
+      title = COALESCE(?, title),
+      description = COALESCE(?, description),
+      duration_minutes = COALESCE(?, duration_minutes),
+      presenter_name = COALESCE(?, presenter_name),
+      presenter_bio = COALESCE(?, presenter_bio),
+      presenter_email = COALESCE(?, presenter_email)
+    WHERE id = ?
+  `).bind(
+    body.title ?? null,
+    body.description ?? null,
+    body.duration_minutes ?? null,
+    body.presenter_name ?? null,
+    body.presenter_bio ?? null,
+    body.presenter_email ?? null,
+    talkId
+  ).run()
+
+  const updated = await c.env.DB.prepare('SELECT * FROM talks WHERE id = ?').bind(talkId).first()
+  return c.json(updated)
+})
+
+adminTalks.delete('/:id', async (c) => {
+  const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured' }, 404)
+
+  const talkId = c.req.param('id')
+  const existing = await c.env.DB.prepare(
+    'SELECT id FROM talks WHERE id = ? AND conference_id = ?'
+  ).bind(talkId, conf.id).first()
+  if (!existing) return c.json({ error: 'Talk not found' }, 404)
+
+  // ON DELETE CASCADE in schema means votes are deleted automatically
+  await c.env.DB.prepare('DELETE FROM talks WHERE id = ?').bind(talkId).run()
+
+  return c.json({ ok: true })
+})
+
+export default adminTalks
