@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { getConference, getTalksWithVoteCounts } from '../../db/queries.js'
 import type { Bindings, Variables } from '../../index.js'
+import { parseAndValidateCsv } from '../../lib/csv.js'
 
 const adminTalks = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -50,6 +51,52 @@ adminTalks.post('/', async (c) => {
 
   const talk = await c.env.DB.prepare('SELECT * FROM talks WHERE id = ?').bind(id).first()
   return c.json(talk, 201)
+})
+
+adminTalks.post('/import', async (c) => {
+  const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured' }, 404)
+
+  const contentType = c.req.header('content-type') ?? ''
+  let csvText: string
+
+  if (contentType.includes('text/csv') || contentType.includes('text/plain')) {
+    csvText = await c.req.text()
+  } else {
+    const formData = await c.req.formData()
+    const file = formData.get('file')
+    if (!file || typeof file === 'string') {
+      return c.json({ error: 'Send CSV as file upload (multipart/form-data field "file") or text/csv body' }, 422)
+    }
+    csvText = await (file as File).text()
+  }
+
+  const { rows, errors } = parseAndValidateCsv(csvText)
+
+  if (errors.length > 0) {
+    return c.json({ error: 'CSV validation failed', details: errors }, 422)
+  }
+
+  if (rows.length === 0) {
+    return c.json({ error: 'CSV contains no data rows' }, 422)
+  }
+
+  const now = Date.now()
+  const stmts = rows.map(row =>
+    c.env.DB.prepare(`
+      INSERT INTO talks (id, conference_id, title, description, duration_minutes, presenter_name, presenter_bio, presenter_email, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      crypto.randomUUID(), conf.id,
+      row.title, row.description, row.duration_minutes,
+      row.presenter_name, row.presenter_bio, row.presenter_email,
+      now
+    )
+  )
+
+  await c.env.DB.batch(stmts)
+
+  return c.json({ ok: true, imported: rows.length }, 201)
 })
 
 adminTalks.put('/:id', async (c) => {

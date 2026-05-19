@@ -7,6 +7,7 @@ import { requireAuth, requireAdmin } from './middleware/auth.js'
 import adminConferenceRoutes from './routes/admin/conference.js'
 import adminSlotTypesRoutes from './routes/admin/slot-types.js'
 import adminTalksRoutes from './routes/admin/talks.js'
+import adminResultsRoutes from './routes/admin/results.js'
 
 export type Bindings = {
   DB: D1Database
@@ -33,12 +34,12 @@ app.route('/api/auth', authRoutes)
 app.route('/api', conferenceRoutes)
 app.route('/api/votes', voteRoutes)
 
-// Admin sub-router — all routes require auth + admin role
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 admin.use('*', requireAuth, requireAdmin)
 admin.route('/conference', adminConferenceRoutes)
 admin.route('/slot-types', adminSlotTypesRoutes)
 admin.route('/talks', adminTalksRoutes)
+admin.route('/results', adminResultsRoutes)
 app.route('/api/admin', admin)
 
 export default app
