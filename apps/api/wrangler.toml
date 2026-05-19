@@ -1,0 +1,12 @@
+name = "cfp-voting-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cfp-voting"
+database_id = "local-db"
+
+[vars]
+ALLOWED_ORIGIN = "http://localhost:5173"
