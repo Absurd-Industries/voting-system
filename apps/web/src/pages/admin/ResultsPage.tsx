@@ -24,16 +24,7 @@ export default function ResultsPage() {
   })
 
   const handleExport = async () => {
-    const clerk = (window as unknown as { __clerk?: { session?: { getToken: () => Promise<string> } } }).__clerk
-    const token = await clerk?.session?.getToken()
-    const res = await fetch('/api/admin/results/export', {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-    if (!res.ok) {
-      alert('Export failed')
-      return
-    }
-    const blob = await res.blob()
+    const blob = await apiFetch<Blob>('/api/admin/results/export')
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url

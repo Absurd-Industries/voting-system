@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '@clerk/react'
 import { apiFetch } from '../lib/api.js'
 
 interface Conference {
@@ -27,7 +26,6 @@ interface VotesResponse {
 }
 
 export default function VotePage() {
-  const { getToken } = useAuth()
   const qc = useQueryClient()
 
   const { data: conference, isLoading: confLoading } = useQuery({

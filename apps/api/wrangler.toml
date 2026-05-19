@@ -9,4 +9,6 @@ database_name = "cfp-voting"
 database_id = "local-db"
 
 [vars]
+# Update ALLOWED_ORIGIN to your Pages domain before production deployment
+# e.g. https://cfp-voting.pages.dev
 ALLOWED_ORIGIN = "http://localhost:5173"

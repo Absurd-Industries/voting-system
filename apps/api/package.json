@@ -11,13 +11,11 @@
   "dependencies": {
     "@clerk/backend": "^1.21.0",
     "hono": "^4.6.0",
-    "papaparse": "^5.4.1",
     "@cfp/db": "*"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.5.0",
     "@cloudflare/workers-types": "^4.20241022.0",
-    "@types/papaparse": "^5.3.0",
     "typescript": "^5.6.3",
     "vitest": "^2.1.0",
     "wrangler": "^3.80.0"

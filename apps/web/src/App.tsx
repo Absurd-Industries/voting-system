@@ -1,7 +1,7 @@
 import { Routes, Route, Link, Navigate } from 'react-router-dom'
 import { SignIn, ClerkLoaded, UserButton, useAuth } from '@clerk/react'
 import { useEffect } from 'react'
-import { apiFetch } from './lib/api.js'
+import { apiFetch, setAuthToken } from './lib/api.js'
 import VotePage from './pages/VotePage.js'
 import ConferencePage from './pages/admin/ConferencePage.js'
 import TalksPage from './pages/admin/TalksPage.js'
@@ -13,6 +13,7 @@ function SyncUser() {
   useEffect(() => {
     if (!isSignedIn) return
     getToken().then(token => {
+      setAuthToken(token)
       if (token) apiFetch('/api/auth/sync', { method: 'POST' }).catch(() => null)
     })
   }, [isSignedIn, getToken])

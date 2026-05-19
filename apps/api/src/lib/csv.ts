@@ -17,7 +17,7 @@ export function parseAndValidateCsv(csv: string): {
   rows: CsvTalkRow[]
   errors: CsvError[]
 } {
-  const lines = csv.trim().split('\n').map(l => l.trim())
+  const lines = csv.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n').map(l => l.trim())
   if (lines.length < 2) return { rows: [], errors: [] }
 
   const headers = lines[0].split(',').map(h => h.trim().toLowerCase())

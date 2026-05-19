@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { getConference, getTalksWithVoteCounts } from '../../db/queries.js'
 import type { Bindings, Variables } from '../../index.js'
 import { parseAndValidateCsv } from '../../lib/csv.js'
+import type { Talk } from '@cfp/db'
 
 const adminTalks = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -105,17 +106,17 @@ adminTalks.put('/:id', async (c) => {
 
   const talkId = c.req.param('id')
   const existing = await c.env.DB.prepare(
-    'SELECT id FROM talks WHERE id = ? AND conference_id = ?'
-  ).bind(talkId, conf.id).first()
+    'SELECT * FROM talks WHERE id = ? AND conference_id = ?'
+  ).bind(talkId, conf.id).first<Talk>()
   if (!existing) return c.json({ error: 'Talk not found' }, 404)
 
   const body = await c.req.json<{
     title?: string
-    description?: string
+    description?: string | null
     duration_minutes?: number
     presenter_name?: string
-    presenter_bio?: string
-    presenter_email?: string
+    presenter_bio?: string | null
+    presenter_email?: string | null
   }>()
 
   if (body.duration_minutes !== undefined && (!Number.isInteger(body.duration_minutes) || body.duration_minutes <= 0)) {
@@ -124,20 +125,20 @@ adminTalks.put('/:id', async (c) => {
 
   await c.env.DB.prepare(`
     UPDATE talks SET
-      title = COALESCE(?, title),
-      description = COALESCE(?, description),
-      duration_minutes = COALESCE(?, duration_minutes),
-      presenter_name = COALESCE(?, presenter_name),
-      presenter_bio = COALESCE(?, presenter_bio),
-      presenter_email = COALESCE(?, presenter_email)
+      title = ?,
+      description = ?,
+      duration_minutes = ?,
+      presenter_name = ?,
+      presenter_bio = ?,
+      presenter_email = ?
     WHERE id = ?
   `).bind(
-    body.title ?? null,
-    body.description ?? null,
-    body.duration_minutes ?? null,
-    body.presenter_name ?? null,
-    body.presenter_bio ?? null,
-    body.presenter_email ?? null,
+    body.title ?? existing.title,
+    body.description !== undefined ? body.description : existing.description,
+    body.duration_minutes ?? existing.duration_minutes,
+    body.presenter_name ?? existing.presenter_name,
+    body.presenter_bio !== undefined ? body.presenter_bio : existing.presenter_bio,
+    body.presenter_email !== undefined ? body.presenter_email : existing.presenter_email,
     talkId
   ).run()
 
@@ -155,8 +156,10 @@ adminTalks.delete('/:id', async (c) => {
   ).bind(talkId, conf.id).first()
   if (!existing) return c.json({ error: 'Talk not found' }, 404)
 
-  // ON DELETE CASCADE in schema means votes are deleted automatically
-  await c.env.DB.prepare('DELETE FROM talks WHERE id = ?').bind(talkId).run()
+  await c.env.DB.batch([
+    c.env.DB.prepare('DELETE FROM votes WHERE talk_id = ?').bind(talkId),
+    c.env.DB.prepare('DELETE FROM talks WHERE id = ?').bind(talkId),
+  ])
 
   return c.json({ ok: true })
 })

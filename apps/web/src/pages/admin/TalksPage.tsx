@@ -117,21 +117,12 @@ export default function TalksPage() {
 
   const importCsv = useMutation({
     mutationFn: async (file: File) => {
-      const clerk = (window as unknown as { __clerk?: { session?: { getToken: () => Promise<string> } } }).__clerk
-      const token = await clerk?.session?.getToken()
       const formData = new FormData()
       formData.append('file', file)
-      const res = await fetch('/api/admin/talks/import', {
+      return apiFetch<{ imported: number }>('/api/admin/talks/import', {
         method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       })
-      if (!res.ok) {
-        const body = await res.json() as { error: string; details?: Array<{ row: number; field: string; message: string }> }
-        const detail = body.details?.map(d => `Row ${d.row} (${d.field}): ${d.message}`).join('\n') ?? body.error
-        throw new Error(detail)
-      }
-      return res.json() as Promise<{ imported: number }>
     },
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['admin-talks'] })

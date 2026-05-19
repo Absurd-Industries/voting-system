@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { requireAuth } from '../middleware/auth.js'
-import { getConference, getVoterVotes, getVoteCount } from '../db/queries.js'
+import { getConference, getVoterVotes } from '../db/queries.js'
 import { getVotingStatus } from '@cfp/db'
 import type { Bindings, Variables } from '../index.js'
 
@@ -49,15 +49,19 @@ votes.post('/:talkId', async (c) => {
   if (!talk) return c.json({ error: 'Talk not found' }, 404)
 
   const voterId = c.get('entityId')
-  const currentCount = await getVoteCount(c.env.DB, voterId)
-  if (currentCount >= conf.votes_per_voter) {
-    return c.json({ error: `Vote budget exhausted (${conf.votes_per_voter} votes max)` }, 422)
-  }
 
   try {
-    await c.env.DB.prepare(
-      'INSERT INTO votes (id, voter_id, talk_id, cast_at) VALUES (?, ?, ?, ?)'
-    ).bind(crypto.randomUUID(), voterId, talkId, Date.now()).run()
+    const result = await c.env.DB.prepare(`
+      INSERT INTO votes (id, voter_id, talk_id, cast_at)
+      SELECT ?, ?, ?, ?
+      WHERE (SELECT COUNT(*) FROM votes WHERE voter_id = ?) < (
+        SELECT votes_per_voter FROM conferences LIMIT 1
+      )
+    `).bind(crypto.randomUUID(), voterId, talkId, Date.now(), voterId).run()
+
+    if (result.meta.changes === 0) {
+      return c.json({ error: `Vote budget exhausted (${conf.votes_per_voter} votes max)` }, 422)
+    }
   } catch (e: unknown) {
     if (e instanceof Error && e.message.includes('UNIQUE')) {
       return c.json({ error: 'Already voted for this talk' }, 409)
