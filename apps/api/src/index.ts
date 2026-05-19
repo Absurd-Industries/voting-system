@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import authRoutes from './routes/auth.js'
 import conferenceRoutes from './routes/conference.js'
+import voteRoutes from './routes/votes.js'
 
 export type Bindings = {
   DB: D1Database
@@ -26,5 +27,6 @@ app.use('*', async (c, next) => {
 app.get('/api/health', (c) => c.json({ ok: true }))
 app.route('/api/auth', authRoutes)
 app.route('/api', conferenceRoutes)
+app.route('/api/votes', voteRoutes)
 
 export default app
