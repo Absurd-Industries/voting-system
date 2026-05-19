@@ -3,6 +3,9 @@ import { cors } from 'hono/cors'
 import authRoutes from './routes/auth.js'
 import conferenceRoutes from './routes/conference.js'
 import voteRoutes from './routes/votes.js'
+import { requireAuth, requireAdmin } from './middleware/auth.js'
+import adminConferenceRoutes from './routes/admin/conference.js'
+import adminSlotTypesRoutes from './routes/admin/slot-types.js'
 
 export type Bindings = {
   DB: D1Database
@@ -28,5 +31,12 @@ app.get('/api/health', (c) => c.json({ ok: true }))
 app.route('/api/auth', authRoutes)
 app.route('/api', conferenceRoutes)
 app.route('/api/votes', voteRoutes)
+
+// Admin sub-router — all routes require auth + admin role
+const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+admin.use('*', requireAuth, requireAdmin)
+admin.route('/conference', adminConferenceRoutes)
+admin.route('/slot-types', adminSlotTypesRoutes)
+app.route('/api/admin', admin)
 
 export default app
