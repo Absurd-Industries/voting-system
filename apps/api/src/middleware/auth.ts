@@ -1,29 +1,15 @@
 import { createMiddleware } from 'hono/factory'
-import { createClerkClient } from '@clerk/backend'
+import { getClerkUserId } from '../lib/clerk.js'
 import type { Bindings, Variables } from '../index.js'
 
 export const requireAuth = createMiddleware<{
   Bindings: Bindings
   Variables: Variables
 }>(async (c, next) => {
-  const authHeader = c.req.header('Authorization')
-  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+  const clerkUserId = await getClerkUserId(c.req.raw, c.env)
 
-  if (!token) {
+  if (!clerkUserId) {
     return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  const clerk = createClerkClient({
-    secretKey: c.env.CLERK_SECRET_KEY,
-    publishableKey: c.env.CLERK_PUBLISHABLE_KEY,
-  })
-
-  let clerkUserId: string
-  try {
-    const verified = await clerk.verifyToken(token)
-    clerkUserId = verified.sub
-  } catch {
-    return c.json({ error: 'Invalid token' }, 401)
   }
 
   // Check if admin first
