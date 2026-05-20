@@ -1,28 +1,29 @@
 import { Routes, Route, Link, Navigate } from 'react-router-dom'
 import { SignIn, ClerkLoaded, UserButton, useAuth } from '@clerk/react'
 import { useEffect } from 'react'
-import { apiFetch, setAuthToken } from './lib/api.js'
+import { apiFetch, initApiAuth } from './lib/api.js'
 import VotePage from './pages/VotePage.js'
 import ConferencePage from './pages/admin/ConferencePage.js'
 import TalksPage from './pages/admin/TalksPage.js'
 import ResultsPage from './pages/admin/ResultsPage.js'
 
 function SyncUser() {
-  const { isSignedIn, getToken } = useAuth()
+  const { isSignedIn } = useAuth()
 
   useEffect(() => {
     if (!isSignedIn) return
-    getToken().then(token => {
-      setAuthToken(token)
-      if (token) apiFetch('/api/auth/sync', { method: 'POST' }).catch(() => null)
-    })
-  }, [isSignedIn, getToken])
+    apiFetch('/api/auth/sync', { method: 'POST' }).catch(() => null)
+  }, [isSignedIn])
 
   return null
 }
 
 function AuthenticatedApp() {
-  const { isSignedIn, isLoaded } = useAuth()
+  const { isSignedIn, isLoaded, getToken } = useAuth()
+
+  // Store getToken callback synchronously so apiFetch always has it
+  // before any React Query queryFns fire
+  initApiAuth(getToken)
 
   if (!isLoaded) return null
 
