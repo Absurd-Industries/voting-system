@@ -22,6 +22,7 @@ adminSlotTypes.put('/', async (c) => {
     return c.json({ error: 'Body must be an array of slot types' }, 422)
   }
 
+  const durations = new Set<number>()
   for (const slot of body) {
     if (!Number.isInteger(slot.duration_minutes) || slot.duration_minutes <= 0) {
       return c.json({ error: 'Each slot must have a positive integer duration_minutes' }, 422)
@@ -29,6 +30,10 @@ adminSlotTypes.put('/', async (c) => {
     if (!Number.isInteger(slot.count) || slot.count <= 0) {
       return c.json({ error: 'Each slot must have a positive integer count' }, 422)
     }
+    if (durations.has(slot.duration_minutes)) {
+      return c.json({ error: `Duplicate slot duration: ${slot.duration_minutes} minutes` }, 422)
+    }
+    durations.add(slot.duration_minutes)
   }
 
   const votesPerVoter = body.reduce((sum, s) => sum + s.count, 0)

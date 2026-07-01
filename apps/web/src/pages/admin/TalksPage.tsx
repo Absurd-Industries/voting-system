@@ -27,60 +27,54 @@ function TalkForm({
 }) {
   const [title, setTitle] = useState(initial?.title ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
-  const [duration, setDuration] = useState(String(initial?.duration_minutes ?? ''))
   const [presenterName, setPresenterName] = useState(initial?.presenter_name ?? '')
   const [presenterBio, setPresenterBio] = useState(initial?.presenter_bio ?? '')
   const [presenterEmail, setPresenterEmail] = useState(initial?.presenter_email ?? '')
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
-          <label className="block text-xs font-medium mb-1">Title *</label>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <label className="mb-1 block text-xs font-medium text-slate-700">Title *</label>
           <input value={title} onChange={e => setTitle(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm" />
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Duration (minutes) *</label>
-          <input type="number" value={duration} onChange={e => setDuration(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label className="block text-xs font-medium mb-1">Presenter Name *</label>
+          <label className="mb-1 block text-xs font-medium text-slate-700">Presenter Name *</label>
           <input value={presenterName} onChange={e => setPresenterName(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm" />
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
         </div>
-        <div className="col-span-2">
-          <label className="block text-xs font-medium mb-1">Description</label>
+        <div className="sm:col-span-2">
+          <label className="mb-1 block text-xs font-medium text-slate-700">Description</label>
           <textarea value={description} onChange={e => setDescription(e.target.value)}
-            rows={2} className="w-full border rounded px-3 py-2 text-sm" />
+            rows={2} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Presenter Bio</label>
+          <label className="mb-1 block text-xs font-medium text-slate-700">Presenter Bio</label>
           <textarea value={presenterBio} onChange={e => setPresenterBio(e.target.value)}
-            rows={2} className="w-full border rounded px-3 py-2 text-sm" />
+            rows={2} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Presenter Email</label>
+          <label className="mb-1 block text-xs font-medium text-slate-700">Presenter Email</label>
           <input type="email" value={presenterEmail} onChange={e => setPresenterEmail(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm" />
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
         </div>
       </div>
       <div className="flex gap-2">
         <button
-          disabled={!title || !presenterName || !duration || isPending}
+          disabled={!title || !presenterName || isPending}
           onClick={() => onSave({
             title, description: description || null,
-            duration_minutes: parseInt(duration, 10),
+            duration_minutes: initial?.duration_minutes ?? 0,
             presenter_name: presenterName,
             presenter_bio: presenterBio || null,
             presenter_email: presenterEmail || null,
           })}
-          className="px-4 py-2 bg-black text-white rounded text-sm font-medium disabled:opacity-50"
+          className="min-h-11 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-50"
         >
           {isPending ? 'Saving...' : 'Save'}
         </button>
-        <button onClick={onCancel} className="px-4 py-2 border rounded text-sm">Cancel</button>
+        <button onClick={onCancel} className="min-h-11 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
       </div>
     </div>
   )
@@ -140,42 +134,45 @@ export default function TalksPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Talks ({talks.length})</h1>
-        <div className="flex gap-2">
-          <Link to="/admin/results" className="px-4 py-2 border rounded text-sm font-medium">
-            View Results →
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Admin</p>
+          <h1 className="text-2xl font-bold text-slate-950">Talks ({talks.length})</h1>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/admin/results" className="min-h-11 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            View Results
           </Link>
           <button onClick={() => setEditingId('new')}
-            className="px-4 py-2 bg-black text-white rounded text-sm font-medium">
+            className="min-h-11 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800">
             + Add Talk
           </button>
         </div>
       </div>
 
       {/* CSV Import */}
-      <div className="bg-white border rounded-lg p-4 space-y-2">
-        <p className="text-sm font-medium">Import from CSV</p>
-        <p className="text-xs text-gray-500">
-          Columns: title, description, duration_minutes, presenter_name, presenter_bio, presenter_email
+      <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <p className="text-sm font-medium text-slate-950">Import from CSV</p>
+        <p className="text-xs text-slate-500">
+          Columns: title, description, presenter_name, presenter_bio, presenter_email
         </p>
-        {csvError && <pre className="text-xs text-red-600 bg-red-50 p-2 rounded whitespace-pre-wrap">{csvError}</pre>}
-        {csvSuccess && <p className="text-xs text-green-600">{csvSuccess}</p>}
-        <div className="flex gap-2 items-center">
+        {csvError && <pre className="whitespace-pre-wrap rounded-md bg-red-50 p-2 text-xs text-red-700">{csvError}</pre>}
+        {csvSuccess && <p className="text-xs font-medium text-emerald-700">{csvSuccess}</p>}
+        <div className="flex flex-wrap items-center gap-2">
           <input ref={fileRef} type="file" accept=".csv,text/csv"
             onChange={e => {
               const file = e.target.files?.[0]
               if (file) importCsv.mutate(file)
             }}
-            className="text-sm" />
-          {importCsv.isPending && <span className="text-sm text-gray-500">Importing...</span>}
+            className="text-sm text-slate-700" />
+          {importCsv.isPending && <span className="text-sm text-slate-500">Importing...</span>}
         </div>
       </div>
 
       {/* New talk form */}
       {editingId === 'new' && (
-        <div className="bg-white border rounded-lg p-4">
-          <h2 className="font-medium mb-3">New Talk</h2>
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="mb-3 font-medium text-slate-950">New Talk</h2>
           <TalkForm
             onSave={(data) => createTalk.mutate(data)}
             onCancel={() => setEditingId(null)}
@@ -187,7 +184,7 @@ export default function TalksPage() {
       {/* Talk list */}
       <div className="space-y-3">
         {talks.map(talk => (
-          <div key={talk.id} className="bg-white border rounded-lg p-4">
+          <div key={talk.id} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             {editingId === talk.id ? (
               <TalkForm
                 initial={talk}
@@ -196,34 +193,33 @@ export default function TalksPage() {
                 isPending={updateTalk.isPending}
               />
             ) : (
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-medium">
-                      {talk.duration_minutes} min
-                    </span>
-                    <h3 className="font-medium">{talk.title}</h3>
+                    <h3 className="font-medium text-slate-950">{talk.title}</h3>
                   </div>
-                  <p className="text-sm text-gray-500">{talk.presenter_name}</p>
-                  {talk.description && <p className="text-sm text-gray-700 mt-1">{talk.description}</p>}
+                  <p className="text-sm text-slate-500">{talk.presenter_name}</p>
+                  {talk.description && <p className="mt-1 text-sm leading-6 text-slate-700">{talk.description}</p>}
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-sm text-gray-500">{talk.vote_count} votes</span>
+                <div className="flex flex-wrap items-center gap-3 sm:shrink-0">
+                  <span className="text-sm text-slate-500">{talk.vote_count} votes</span>
                   <button onClick={() => setEditingId(talk.id)}
-                    className="text-sm text-blue-600 hover:underline">Edit</button>
+                    className="min-h-11 text-sm font-medium text-blue-700 hover:text-blue-800">Edit</button>
                   <button
                     onClick={() => {
                       if (confirm(`Delete "${talk.title}"?${talk.vote_count > 0 ? ` This will also delete ${talk.vote_count} vote(s).` : ''}`))
                         deleteTalk.mutate(talk.id)
                     }}
-                    className="text-sm text-red-500 hover:text-red-700">Delete</button>
+                    className="min-h-11 text-sm font-medium text-red-600 hover:text-red-700">Delete</button>
                 </div>
               </div>
             )}
           </div>
         ))}
         {talks.length === 0 && !editingId && (
-          <p className="text-gray-500 text-sm">No talks yet. Add one above or import a CSV.</p>
+          <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+            No talks yet. Add one above or import a CSV.
+          </div>
         )}
       </div>
     </div>

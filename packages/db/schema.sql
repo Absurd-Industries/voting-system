@@ -6,13 +6,14 @@ CREATE TABLE IF NOT EXISTS conferences (
   voting_closes_at    INTEGER,
   voting_force_status TEXT NOT NULL DEFAULT 'scheduled',
   votes_per_voter     INTEGER NOT NULL DEFAULT 0,
+  results_public      INTEGER NOT NULL DEFAULT 0,
   created_at          INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS slot_types (
   id               TEXT PRIMARY KEY,
   conference_id    TEXT NOT NULL REFERENCES conferences(id) ON DELETE CASCADE,
-  duration_minutes INTEGER NOT NULL,
+  duration_minutes INTEGER NOT NULL DEFAULT 0,
   count            INTEGER NOT NULL
 );
 
@@ -48,4 +49,14 @@ CREATE TABLE IF NOT EXISTS votes (
   talk_id   TEXT NOT NULL REFERENCES talks(id) ON DELETE CASCADE,
   cast_at   INTEGER NOT NULL,
   UNIQUE(voter_id, talk_id)
+);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id             TEXT PRIMARY KEY,
+  admin_user_id  TEXT NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+  action         TEXT NOT NULL,
+  target_type    TEXT NOT NULL,
+  target_id      TEXT,
+  details        TEXT,
+  created_at     INTEGER NOT NULL
 );

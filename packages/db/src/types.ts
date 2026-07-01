@@ -6,6 +6,7 @@ export interface Conference {
   voting_closes_at: number | null
   voting_force_status: 'open' | 'closed' | 'scheduled'
   votes_per_voter: number
+  results_public: 0 | 1
   created_at: number
 }
 
@@ -47,4 +48,14 @@ export interface Vote {
   voter_id: string
   talk_id: string
   cast_at: number
+}
+
+export interface AuditLog {
+  id: string
+  admin_user_id: string
+  action: string
+  target_type: string
+  target_id: string | null
+  details: string | null
+  created_at: number
 }

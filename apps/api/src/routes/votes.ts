@@ -55,9 +55,9 @@ votes.post('/:talkId', async (c) => {
       INSERT INTO votes (id, voter_id, talk_id, cast_at)
       SELECT ?, ?, ?, ?
       WHERE (SELECT COUNT(*) FROM votes WHERE voter_id = ?) < (
-        SELECT votes_per_voter FROM conferences LIMIT 1
+        SELECT votes_per_voter FROM conferences WHERE id = ?
       )
-    `).bind(crypto.randomUUID(), voterId, talkId, Date.now(), voterId).run()
+    `).bind(crypto.randomUUID(), voterId, talkId, Date.now(), voterId, conf.id).run()
 
     if (result.meta.changes === 0) {
       return c.json({ error: `Vote budget exhausted (${conf.votes_per_voter} votes max)` }, 422)

@@ -12,3 +12,6 @@ database_id = "local-db"
 # Update ALLOWED_ORIGIN to your Pages domain before production deployment
 # e.g. https://cfp-voting.pages.dev
 ALLOWED_ORIGIN = "http://localhost:5173"
+# Optional extra admins. The first synced user becomes admin even if this is unset.
+# Comma-separated admin emails, e.g. "alice@example.com,bob@example.com"
+# ADMIN_EMAIL = ""

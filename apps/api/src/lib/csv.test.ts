@@ -33,11 +33,12 @@ My Talk,desc,30,`
     expect(errors.some(e => e.field === 'presenter_name')).toBe(true)
   })
 
-  it('accepts optional fields as empty', () => {
-    const csv = `title,duration_minutes,presenter_name
-My Talk,30,Jane`
+  it('accepts optional fields and duration as empty', () => {
+    const csv = `title,presenter_name
+My Talk,Jane`
     const { rows, errors } = parseAndValidateCsv(csv)
     expect(errors).toHaveLength(0)
+    expect(rows[0].duration_minutes).toBe(0)
     expect(rows[0].description).toBeNull()
     expect(rows[0].presenter_bio).toBeNull()
     expect(rows[0].presenter_email).toBeNull()

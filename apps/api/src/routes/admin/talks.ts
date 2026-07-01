@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { getConference, getTalksWithVoteCounts } from '../../db/queries.js'
 import type { Bindings, Variables } from '../../index.js'
 import { parseAndValidateCsv } from '../../lib/csv.js'
+import { logAdminAction } from '../../lib/audit.js'
 import type { Talk } from '@cfp/db'
 
 const adminTalks = new Hono<{ Bindings: Bindings; Variables: Variables }>()
@@ -21,7 +22,7 @@ adminTalks.post('/', async (c) => {
   const body = await c.req.json<{
     title: string
     description?: string
-    duration_minutes: number
+    duration_minutes?: number
     presenter_name: string
     presenter_bio?: string
     presenter_email?: string
@@ -30,8 +31,8 @@ adminTalks.post('/', async (c) => {
   const errors: string[] = []
   if (!body.title?.trim()) errors.push('title is required')
   if (!body.presenter_name?.trim()) errors.push('presenter_name is required')
-  if (!Number.isInteger(body.duration_minutes) || body.duration_minutes <= 0) {
-    errors.push('duration_minutes must be a positive integer')
+  if (body.duration_minutes !== undefined && (!Number.isInteger(body.duration_minutes) || body.duration_minutes < 0)) {
+    errors.push('duration_minutes must be a non-negative integer')
   }
   if (errors.length > 0) return c.json({ error: errors.join(', ') }, 422)
 
@@ -43,7 +44,7 @@ adminTalks.post('/', async (c) => {
     id, conf.id,
     body.title.trim(),
     body.description ?? null,
-    body.duration_minutes,
+    body.duration_minutes ?? 0,
     body.presenter_name.trim(),
     body.presenter_bio ?? null,
     body.presenter_email ?? null,
@@ -51,6 +52,10 @@ adminTalks.post('/', async (c) => {
   ).run()
 
   const talk = await c.env.DB.prepare('SELECT * FROM talks WHERE id = ?').bind(id).first()
+  await logAdminAction(c.env.DB, c.get('entityId'), 'create', 'talk', id, {
+    title: body.title.trim(),
+    presenter_name: body.presenter_name.trim(),
+  })
   return c.json(talk, 201)
 })
 
@@ -97,6 +102,10 @@ adminTalks.post('/import', async (c) => {
 
   await c.env.DB.batch(stmts)
 
+  await logAdminAction(c.env.DB, c.get('entityId'), 'import', 'talk', null, {
+    imported: rows.length,
+  })
+
   return c.json({ ok: true, imported: rows.length }, 201)
 })
 
@@ -119,8 +128,8 @@ adminTalks.put('/:id', async (c) => {
     presenter_email?: string | null
   }>()
 
-  if (body.duration_minutes !== undefined && (!Number.isInteger(body.duration_minutes) || body.duration_minutes <= 0)) {
-    return c.json({ error: 'duration_minutes must be a positive integer' }, 422)
+  if (body.duration_minutes !== undefined && (!Number.isInteger(body.duration_minutes) || body.duration_minutes < 0)) {
+    return c.json({ error: 'duration_minutes must be a non-negative integer' }, 422)
   }
 
   await c.env.DB.prepare(`
@@ -143,6 +152,16 @@ adminTalks.put('/:id', async (c) => {
   ).run()
 
   const updated = await c.env.DB.prepare('SELECT * FROM talks WHERE id = ?').bind(talkId).first()
+  await logAdminAction(c.env.DB, c.get('entityId'), 'update', 'talk', talkId, {
+    before: {
+      title: existing.title,
+      presenter_name: existing.presenter_name,
+    },
+    after: {
+      title: body.title ?? existing.title,
+      presenter_name: body.presenter_name ?? existing.presenter_name,
+    },
+  })
   return c.json(updated)
 })
 
@@ -152,14 +171,23 @@ adminTalks.delete('/:id', async (c) => {
 
   const talkId = c.req.param('id')
   const existing = await c.env.DB.prepare(
-    'SELECT id FROM talks WHERE id = ? AND conference_id = ?'
-  ).bind(talkId, conf.id).first()
+    `SELECT t.id, t.title, COUNT(v.id) as vote_count
+     FROM talks t
+     LEFT JOIN votes v ON v.talk_id = t.id
+     WHERE t.id = ? AND t.conference_id = ?
+     GROUP BY t.id`
+  ).bind(talkId, conf.id).first<{ id: string; title: string; vote_count: number }>()
   if (!existing) return c.json({ error: 'Talk not found' }, 404)
 
   await c.env.DB.batch([
     c.env.DB.prepare('DELETE FROM votes WHERE talk_id = ?').bind(talkId),
     c.env.DB.prepare('DELETE FROM talks WHERE id = ?').bind(talkId),
   ])
+
+  await logAdminAction(c.env.DB, c.get('entityId'), 'delete', 'talk', talkId, {
+    title: existing.title,
+    vote_count_deleted: existing.vote_count,
+  })
 
   return c.json({ ok: true })
 })

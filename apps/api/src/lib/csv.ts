@@ -41,9 +41,9 @@ export function parseAndValidateCsv(csv: string): {
     if (!presenterName) rowErrors.push({ row: i, field: 'presenter_name', message: 'presenter_name is required' })
 
     const durationRaw = get('duration_minutes')
-    const duration = parseInt(durationRaw, 10)
-    if (!durationRaw || isNaN(duration) || duration <= 0 || String(duration) !== durationRaw) {
-      rowErrors.push({ row: i, field: 'duration_minutes', message: 'duration_minutes must be a positive integer' })
+    const duration = durationRaw ? parseInt(durationRaw, 10) : 0
+    if (durationRaw && (isNaN(duration) || duration < 0 || String(duration) !== durationRaw)) {
+      rowErrors.push({ row: i, field: 'duration_minutes', message: 'duration_minutes must be a non-negative integer' })
     }
 
     if (rowErrors.length > 0) {

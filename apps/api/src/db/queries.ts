@@ -39,3 +39,23 @@ export async function getVoteCount(db: D1Database, voterId: string) {
   ).bind(voterId).first<{ count: number }>()
   return result?.count ?? 0
 }
+
+export async function getVoteStats(db: D1Database) {
+  const voterCount = await db.prepare(
+    'SELECT COUNT(*) as count FROM voters'
+  ).first<{ count: number }>()
+
+  const participatingVoterCount = await db.prepare(
+    'SELECT COUNT(DISTINCT voter_id) as count FROM votes'
+  ).first<{ count: number }>()
+
+  const voteCount = await db.prepare(
+    'SELECT COUNT(*) as count FROM votes'
+  ).first<{ count: number }>()
+
+  return {
+    eligible_voters: voterCount?.count ?? 0,
+    participating_voters: participatingVoterCount?.count ?? 0,
+    total_votes: voteCount?.count ?? 0,
+  }
+}
