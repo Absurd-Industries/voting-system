@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "db:reset:local": "wrangler d1 execute cfp-voting --local --command \"DROP TABLE IF EXISTS audit_logs; DROP TABLE IF EXISTS votes; DROP TABLE IF EXISTS slot_types; DROP TABLE IF EXISTS talks; DROP TABLE IF EXISTS voters; DROP TABLE IF EXISTS admin_users; DROP TABLE IF EXISTS conferences;\" && wrangler d1 execute cfp-voting --local --file ../../packages/db/schema.sql",
+    "db:seed:local": "wrangler d1 execute cfp-voting --local --file ../../packages/db/seed.sql",
+    "db:reset-seed:local": "npm run db:reset:local && npm run db:seed:local",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -6,6 +6,9 @@
     "dev:api": "npm -w apps/api run dev",
     "dev:web": "npm -w apps/web run dev",
     "test:api": "npm -w apps/api run test",
-    "test:db": "npm -w packages/db run test"
+    "test:db": "npm -w packages/db run test",
+    "db:reset:local": "npm -w apps/api run db:reset:local",
+    "db:seed:local": "npm -w apps/api run db:seed:local",
+    "db:reset-seed:local": "npm -w apps/api run db:reset-seed:local"
   }
 }
