@@ -61,7 +61,8 @@ export default function VotePage() {
 
   const votedIds = new Set(myVotes?.votes ?? [])
   const votesUsed = votedIds.size
-  const votesTotal = myVotes?.votes_per_voter ?? 0
+  const votesTotal = conference?.votes_per_voter ?? myVotes?.votes_per_voter ?? 0
+  const isAdminPreview = myVotes?.votes_per_voter === 0 && votesTotal > 0
   const clientServerOffset = useMemo(() => (
     conference ? conference.server_now - Date.now() : 0
   ), [conference?.server_now])
@@ -116,9 +117,10 @@ export default function VotePage() {
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <span className="font-medium">Voting is open</span>
-            <span>{votesUsed} of {votesTotal} votes used</span>
+            <span>{isAdminPreview ? `${votesTotal} votes per voter` : `${votesUsed} of ${votesTotal} votes used`}</span>
           </div>
           {votingClosesAt && <p className="mt-1 text-emerald-800">Closes {votingClosesAt}</p>}
+          {isAdminPreview && <p className="mt-1 text-emerald-800">Admin preview: admins cannot cast votes.</p>}
         </div>
       ) : (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
