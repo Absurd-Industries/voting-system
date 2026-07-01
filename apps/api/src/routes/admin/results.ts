@@ -10,7 +10,7 @@ adminResults.get('/', async (c) => {
   if (!conf) return c.json({ error: 'No conference configured' }, 404)
 
   const { results: talks } = await getTalksWithVoteCounts(c.env.DB, conf.id)
-  const stats = await getVoteStats(c.env.DB)
+  const stats = await getVoteStats(c.env.DB, conf.id)
 
   return c.json({
     talks,

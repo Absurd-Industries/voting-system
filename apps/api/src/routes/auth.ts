@@ -11,8 +11,8 @@ function getPrimaryEmail(user: Awaited<ReturnType<ReturnType<typeof createClerkC
   return primary ?? user.emailAddresses[0] ?? null
 }
 
-function isExplicitlyUnverified(email: ReturnType<typeof getPrimaryEmail>) {
-  return email?.verification?.status === 'unverified'
+function isVerifiedEmail(email: ReturnType<typeof getPrimaryEmail>) {
+  return email?.verification?.status === 'verified'
 }
 
 auth.post('/sync', async (c) => {
@@ -31,28 +31,23 @@ auth.post('/sync', async (c) => {
   const primaryEmail = getPrimaryEmail(user)
   const email = primaryEmail?.emailAddress ?? ''
 
-  if (!email) {
+  if (!email || !isVerifiedEmail(primaryEmail)) {
     return c.json({ error: 'A verified email is required before this account can be synced.' }, 422)
   }
 
   // Bootstrap access: the first synced user becomes the initial admin.
-  if (!isExplicitlyUnverified(primaryEmail)) {
-    const firstAdmin = await c.env.DB.prepare(`
-      INSERT INTO admin_users (id, clerk_user_id, email, created_at)
-      SELECT ?, ?, ?, ?
-      WHERE NOT EXISTS (SELECT 1 FROM admin_users)
-    `).bind(crypto.randomUUID(), clerkUserId, email, Date.now()).run()
-    if (firstAdmin.meta.changes > 0) {
-      await c.env.DB.prepare('DELETE FROM voters WHERE clerk_user_id = ?').bind(clerkUserId).run()
-      return c.json({ ok: true, role: 'admin' })
-    }
+  const firstAdmin = await c.env.DB.prepare(`
+    INSERT INTO admin_users (id, clerk_user_id, email, created_at)
+    SELECT ?, ?, ?, ?
+    WHERE NOT EXISTS (SELECT 1 FROM admin_users)
+  `).bind(crypto.randomUUID(), clerkUserId, email, Date.now()).run()
+  if (firstAdmin.meta.changes > 0) {
+    await c.env.DB.prepare('DELETE FROM voters WHERE clerk_user_id = ?').bind(clerkUserId).run()
+    return c.json({ ok: true, role: 'admin' })
   }
 
   // Also auto-promote if email matches one of the configured admin emails.
   if (isAdminEmail(email, c.env.ADMIN_EMAIL)) {
-    if (isExplicitlyUnverified(primaryEmail)) {
-      return c.json({ error: 'Verify your email before admin access is granted.' }, 403)
-    }
     await c.env.DB.prepare(
       'INSERT OR IGNORE INTO admin_users (id, clerk_user_id, email, created_at) VALUES (?, ?, ?, ?)'
     ).bind(crypto.randomUUID(), clerkUserId, email, Date.now()).run()

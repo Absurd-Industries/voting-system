@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { getConference, getSlotTypes } from '../../db/queries.js'
+import { logAdminAction } from '../../lib/audit.js'
 import type { Bindings, Variables } from '../../index.js'
 
 const adminSlotTypes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
@@ -37,6 +38,7 @@ adminSlotTypes.put('/', async (c) => {
   }
 
   const votesPerVoter = body.reduce((sum, s) => sum + s.count, 0)
+  const { results: beforeSlotTypes } = await getSlotTypes(c.env.DB, conf.id)
 
   // Replace all slot types atomically
   const stmts = [
@@ -54,6 +56,22 @@ adminSlotTypes.put('/', async (c) => {
   await c.env.DB.batch(stmts)
 
   const { results } = await getSlotTypes(c.env.DB, conf.id)
+  await logAdminAction(c.env.DB, c.get('entityId'), 'update', 'slot_types', conf.id, {
+    before: {
+      slot_types: beforeSlotTypes.map(slot => ({
+        duration_minutes: slot.duration_minutes,
+        count: slot.count,
+      })),
+      votes_per_voter: conf.votes_per_voter,
+    },
+    after: {
+      slot_types: results.map(slot => ({
+        duration_minutes: slot.duration_minutes,
+        count: slot.count,
+      })),
+      votes_per_voter: votesPerVoter,
+    },
+  })
   return c.json({ slot_types: results, votes_per_voter: votesPerVoter })
 })
 

@@ -17,30 +17,37 @@ export function parseAndValidateCsv(csv: string): {
   rows: CsvTalkRow[]
   errors: CsvError[]
 } {
-  const lines = csv.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n').map(l => l.trim())
-  if (lines.length < 2) return { rows: [], errors: [] }
+  const records = parseCsvRecords(csv)
+  if (records.length < 2) return { rows: [], errors: [] }
 
-  const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
+  const headers = records[0].map(h => h.trim().toLowerCase())
 
   const rows: CsvTalkRow[] = []
   const errors: CsvError[] = []
 
-  for (let i = 1; i < lines.length; i++) {
-    const values = parseCsvLine(lines[i])
-    const get = (col: string) => {
+  for (let i = 1; i < records.length; i++) {
+    const values = records[i]
+    if (values.every(value => value.trim() === '')) continue
+
+    const getRaw = (col: string) => {
       const idx = headers.indexOf(col)
-      return idx >= 0 ? (values[idx] ?? '').trim() : ''
+      return idx >= 0 ? (values[idx] ?? '') : ''
+    }
+    const getTrimmed = (col: string) => getRaw(col).trim()
+    const getOptional = (col: string) => {
+      const value = getRaw(col)
+      return value.trim() === '' ? null : value
     }
 
     const rowErrors: CsvError[] = []
 
-    const title = get('title')
+    const title = getTrimmed('title')
     if (!title) rowErrors.push({ row: i, field: 'title', message: 'title is required' })
 
-    const presenterName = get('presenter_name')
+    const presenterName = getTrimmed('presenter_name')
     if (!presenterName) rowErrors.push({ row: i, field: 'presenter_name', message: 'presenter_name is required' })
 
-    const durationRaw = get('duration_minutes')
+    const durationRaw = getTrimmed('duration_minutes')
     const duration = durationRaw ? parseInt(durationRaw, 10) : 0
     if (durationRaw && (isNaN(duration) || duration < 0 || String(duration) !== durationRaw)) {
       rowErrors.push({ row: i, field: 'duration_minutes', message: 'duration_minutes must be a non-negative integer' })
@@ -53,33 +60,53 @@ export function parseAndValidateCsv(csv: string): {
 
     rows.push({
       title,
-      description: get('description') || null,
+      description: getOptional('description'),
       duration_minutes: duration,
       presenter_name: presenterName,
-      presenter_bio: get('presenter_bio') || null,
-      presenter_email: get('presenter_email') || null,
+      presenter_bio: getOptional('presenter_bio'),
+      presenter_email: getOptional('presenter_email'),
     })
   }
 
   return { rows, errors }
 }
 
-// Minimal CSV line parser handling quoted fields
-function parseCsvLine(line: string): string[] {
-  const result: string[] = []
+function parseCsvRecords(csv: string): string[][] {
+  const records: string[][] = []
+  let record: string[] = []
   let current = ''
   let inQuotes = false
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i]
+
+  const input = csv.startsWith('\uFEFF') ? csv.slice(1) : csv
+
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i]
+
     if (ch === '"') {
-      inQuotes = !inQuotes
+      if (inQuotes && input[i + 1] === '"') {
+        current += '"'
+        i++
+      } else {
+        inQuotes = !inQuotes
+      }
     } else if (ch === ',' && !inQuotes) {
-      result.push(current)
+      record.push(current)
       current = ''
+    } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+      record.push(current)
+      records.push(record)
+      record = []
+      current = ''
+      if (ch === '\r' && input[i + 1] === '\n') i++
     } else {
       current += ch
     }
   }
-  result.push(current)
-  return result
+
+  record.push(current)
+  if (record.length > 1 || record[0] !== '' || records.length === 0) {
+    records.push(record)
+  }
+
+  return records
 }

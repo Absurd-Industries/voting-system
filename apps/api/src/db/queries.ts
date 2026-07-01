@@ -1,7 +1,7 @@
 import type { Conference, SlotType, Talk, Vote } from '@cfp/db'
 
 export async function getConference(db: D1Database) {
-  return db.prepare('SELECT * FROM conferences LIMIT 1').first<Conference>()
+  return db.prepare('SELECT * FROM conferences ORDER BY created_at DESC LIMIT 1').first<Conference>()
 }
 
 export async function getTalksByConference(db: D1Database, conferenceId: string) {
@@ -27,31 +27,43 @@ export async function getSlotTypes(db: D1Database, conferenceId: string) {
   ).bind(conferenceId).all<SlotType>()
 }
 
-export async function getVoterVotes(db: D1Database, voterId: string) {
-  return db.prepare(
-    'SELECT * FROM votes WHERE voter_id = ?'
-  ).bind(voterId).all<Vote>()
+export async function getVoterVotes(db: D1Database, voterId: string, conferenceId: string) {
+  return db.prepare(`
+    SELECT v.*
+    FROM votes v
+    INNER JOIN talks t ON t.id = v.talk_id
+    WHERE v.voter_id = ? AND t.conference_id = ?
+  `).bind(voterId, conferenceId).all<Vote>()
 }
 
-export async function getVoteCount(db: D1Database, voterId: string) {
+export async function getVoteCount(db: D1Database, voterId: string, conferenceId: string) {
   const result = await db.prepare(
-    'SELECT COUNT(*) as count FROM votes WHERE voter_id = ?'
-  ).bind(voterId).first<{ count: number }>()
+    `SELECT COUNT(*) as count
+     FROM votes v
+     INNER JOIN talks t ON t.id = v.talk_id
+     WHERE v.voter_id = ? AND t.conference_id = ?`
+  ).bind(voterId, conferenceId).first<{ count: number }>()
   return result?.count ?? 0
 }
 
-export async function getVoteStats(db: D1Database) {
+export async function getVoteStats(db: D1Database, conferenceId: string) {
   const voterCount = await db.prepare(
     'SELECT COUNT(*) as count FROM voters'
   ).first<{ count: number }>()
 
-  const participatingVoterCount = await db.prepare(
-    'SELECT COUNT(DISTINCT voter_id) as count FROM votes'
-  ).first<{ count: number }>()
+  const participatingVoterCount = await db.prepare(`
+    SELECT COUNT(DISTINCT v.voter_id) as count
+    FROM votes v
+    INNER JOIN talks t ON t.id = v.talk_id
+    WHERE t.conference_id = ?
+  `).bind(conferenceId).first<{ count: number }>()
 
-  const voteCount = await db.prepare(
-    'SELECT COUNT(*) as count FROM votes'
-  ).first<{ count: number }>()
+  const voteCount = await db.prepare(`
+    SELECT COUNT(*) as count
+    FROM votes v
+    INNER JOIN talks t ON t.id = v.talk_id
+    WHERE t.conference_id = ?
+  `).bind(conferenceId).first<{ count: number }>()
 
   return {
     eligible_voters: voterCount?.count ?? 0,

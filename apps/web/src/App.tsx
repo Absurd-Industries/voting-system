@@ -1,6 +1,7 @@
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom'
 import { SignIn, ClerkLoaded, UserButton, useAuth } from '@clerk/react'
 import { useQuery } from '@tanstack/react-query'
+import type { ReactNode } from 'react'
 import { apiFetch, initApiAuth } from './lib/api.js'
 import VotePage from './pages/VotePage.js'
 import ConferencePage from './pages/admin/ConferencePage.js'
@@ -22,7 +23,7 @@ function AuthenticatedApp() {
   // before any React Query queryFns fire
   initApiAuth(getToken)
 
-  const { data: currentUser } = useQuery({
+  const { data: currentUser, isLoading: isUserLoading } = useQuery({
     queryKey: ['auth-me'],
     queryFn: async () => {
       await apiFetch('/api/auth/sync', { method: 'POST' })
@@ -47,6 +48,14 @@ function AuthenticatedApp() {
   }
 
   const isAdmin = currentUser?.role === 'admin'
+
+  function adminOnly(element: ReactNode) {
+    if (isUserLoading) {
+      return <div className="text-sm text-slate-500">Loading...</div>
+    }
+    if (!isAdmin) return <ForbiddenPage />
+    return element
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
@@ -78,13 +87,31 @@ function AuthenticatedApp() {
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <Routes>
           <Route path="/" element={<VotePage />} />
-          <Route path="/admin/conference" element={<ConferencePage />} />
-          <Route path="/admin/talks" element={<TalksPage />} />
-          <Route path="/admin/results" element={<ResultsPage />} />
+          <Route path="/admin/conference" element={adminOnly(<ConferencePage />)} />
+          <Route path="/admin/talks" element={adminOnly(<TalksPage />)} />
+          <Route path="/admin/results" element={adminOnly(<ResultsPage />)} />
           <Route path="/results" element={<PublicResultsPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
+    </div>
+  )
+}
+
+function ForbiddenPage() {
+  return (
+    <div className="max-w-xl">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Forbidden</p>
+      <h1 className="mt-2 text-2xl font-bold text-slate-950">Admin access required</h1>
+      <p className="mt-3 text-sm leading-6 text-slate-600">
+        This page is only available to conference admins. Use the vote page for voter access.
+      </p>
+      <Link
+        to="/"
+        className="mt-5 inline-flex min-h-11 items-center rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+      >
+        Go to vote page
+      </Link>
     </div>
   )
 }

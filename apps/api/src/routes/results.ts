@@ -13,7 +13,7 @@ results.get('/', async (c) => {
   }
 
   const { results: talks } = await getTalksWithVoteCounts(c.env.DB, conf.id)
-  const stats = await getVoteStats(c.env.DB)
+  const stats = await getVoteStats(c.env.DB, conf.id)
 
   return c.json({
     conference: {

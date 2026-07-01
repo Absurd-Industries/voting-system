@@ -4,6 +4,48 @@ import { logAdminAction } from '../../lib/audit.js'
 import type { Bindings, Variables } from '../../index.js'
 
 const adminConference = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+const FORCE_STATUSES = new Set(['open', 'closed', 'scheduled'])
+
+type ConferenceBody = {
+  name?: string
+  description?: string | null
+  voting_opens_at?: number | null
+  voting_closes_at?: number | null
+  voting_force_status?: string
+  votes_per_voter?: number
+}
+
+function validateConferenceBody(body: ConferenceBody, requireName: boolean) {
+  const errors: string[] = []
+
+  if (requireName || body.name !== undefined) {
+    if (!body.name?.trim()) errors.push('name is required')
+  }
+
+  if (body.voting_force_status !== undefined && !FORCE_STATUSES.has(body.voting_force_status)) {
+    errors.push('voting_force_status must be scheduled, open, or closed')
+  }
+
+  if (body.voting_opens_at !== undefined && body.voting_opens_at !== null && !Number.isInteger(body.voting_opens_at)) {
+    errors.push('voting_opens_at must be an integer timestamp or null')
+  }
+
+  if (body.voting_closes_at !== undefined && body.voting_closes_at !== null && !Number.isInteger(body.voting_closes_at)) {
+    errors.push('voting_closes_at must be an integer timestamp or null')
+  }
+
+  if (body.votes_per_voter !== undefined && (!Number.isInteger(body.votes_per_voter) || body.votes_per_voter < 0)) {
+    errors.push('votes_per_voter must be a non-negative integer')
+  }
+
+  const opens = body.voting_opens_at
+  const closes = body.voting_closes_at
+  if (opens !== undefined && opens !== null && closes !== undefined && closes !== null && opens > closes) {
+    errors.push('voting_opens_at must be before voting_closes_at')
+  }
+
+  return errors
+}
 
 adminConference.get('/', async (c) => {
   const conf = await getConference(c.env.DB)
@@ -15,21 +57,10 @@ adminConference.post('/', async (c) => {
   const existing = await getConference(c.env.DB)
   if (existing) return c.json({ error: 'Conference already exists. Use PUT to update.' }, 409)
 
-  const body = await c.req.json<{
-    name: string
-    description?: string
-    voting_opens_at?: number
-    voting_closes_at?: number
-    voting_force_status?: 'open' | 'closed' | 'scheduled'
-    votes_per_voter?: number
-  }>()
+  const body = await c.req.json<ConferenceBody>()
 
-  if (!body.name?.trim()) {
-    return c.json({ error: 'name is required' }, 422)
-  }
-  if (body.votes_per_voter !== undefined && (!Number.isInteger(body.votes_per_voter) || body.votes_per_voter < 0)) {
-    return c.json({ error: 'votes_per_voter must be a non-negative integer' }, 422)
-  }
+  const errors = validateConferenceBody(body, true)
+  if (errors.length > 0) return c.json({ error: errors.join(', ') }, 422)
 
   const id = crypto.randomUUID()
   await c.env.DB.prepare(`
@@ -37,7 +68,7 @@ adminConference.post('/', async (c) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)
   `).bind(
     id,
-    body.name.trim(),
+    body.name!.trim(),
     body.description ?? null,
     body.voting_opens_at ?? null,
     body.voting_closes_at ?? null,
@@ -48,7 +79,7 @@ adminConference.post('/', async (c) => {
 
   const conf = await getConference(c.env.DB)
   await logAdminAction(c.env.DB, c.get('entityId'), 'create', 'conference', conf?.id ?? id, {
-    name: body.name.trim(),
+    name: body.name!.trim(),
     votes_per_voter: body.votes_per_voter ?? 0,
   })
   return c.json(conf, 201)
@@ -58,18 +89,18 @@ adminConference.put('/', async (c) => {
   const conf = await getConference(c.env.DB)
   if (!conf) return c.json({ error: 'No conference exists. Use POST to create.' }, 404)
 
-  const body = await c.req.json<{
-    name?: string
-    description?: string
-    voting_opens_at?: number | null
-    voting_closes_at?: number | null
-    voting_force_status?: 'open' | 'closed' | 'scheduled'
-    votes_per_voter?: number
-  }>()
+  const body = await c.req.json<ConferenceBody>()
 
-  if (body.votes_per_voter !== undefined && (!Number.isInteger(body.votes_per_voter) || body.votes_per_voter < 0)) {
-    return c.json({ error: 'votes_per_voter must be a non-negative integer' }, 422)
-  }
+  const candidateOpens = body.voting_opens_at !== undefined ? body.voting_opens_at : conf.voting_opens_at
+  const candidateCloses = body.voting_closes_at !== undefined ? body.voting_closes_at : conf.voting_closes_at
+  const errors = validateConferenceBody({
+    ...body,
+    voting_opens_at: candidateOpens,
+    voting_closes_at: candidateCloses,
+  }, false)
+  if (errors.length > 0) return c.json({ error: errors.join(', ') }, 422)
+
+  const name = body.name !== undefined ? body.name.trim() : null
 
   await c.env.DB.prepare(`
     UPDATE conferences SET
@@ -81,7 +112,7 @@ adminConference.put('/', async (c) => {
       votes_per_voter = COALESCE(?, votes_per_voter)
     WHERE id = ?
   `).bind(
-    body.name ?? null,
+    name,
     body.description !== undefined ? body.description : conf.description,
     body.voting_opens_at !== undefined ? body.voting_opens_at : conf.voting_opens_at,
     body.voting_closes_at !== undefined ? body.voting_closes_at : conf.voting_closes_at,

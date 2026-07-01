@@ -12,9 +12,10 @@ votes.get('/mine', async (c) => {
   if (c.get('role') === 'admin') {
     return c.json({ votes: [], votes_per_voter: 0 })
   }
-  const voterId = c.get('entityId')
-  const { results } = await getVoterVotes(c.env.DB, voterId)
   const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured' }, 404)
+  const voterId = c.get('entityId')
+  const { results } = await getVoterVotes(c.env.DB, voterId, conf.id)
   return c.json({
     votes: results.map(v => v.talk_id),
     votes_per_voter: conf?.votes_per_voter ?? 0,
@@ -54,10 +55,15 @@ votes.post('/:talkId', async (c) => {
     const result = await c.env.DB.prepare(`
       INSERT INTO votes (id, voter_id, talk_id, cast_at)
       SELECT ?, ?, ?, ?
-      WHERE (SELECT COUNT(*) FROM votes WHERE voter_id = ?) < (
+      WHERE (
+        SELECT COUNT(*)
+        FROM votes v
+        INNER JOIN talks t ON t.id = v.talk_id
+        WHERE v.voter_id = ? AND t.conference_id = ?
+      ) < (
         SELECT votes_per_voter FROM conferences WHERE id = ?
       )
-    `).bind(crypto.randomUUID(), voterId, talkId, Date.now(), voterId, conf.id).run()
+    `).bind(crypto.randomUUID(), voterId, talkId, Date.now(), voterId, conf.id, conf.id).run()
 
     if (result.meta.changes === 0) {
       return c.json({ error: `Vote budget exhausted (${conf.votes_per_voter} votes max)` }, 422)

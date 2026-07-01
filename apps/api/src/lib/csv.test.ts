@@ -51,4 +51,30 @@ My Talk,abc,Jane`
     const { errors } = parseAndValidateCsv(csv)
     expect(errors).toHaveLength(2)
   })
+
+  it('parses quoted commas and escaped quotes', () => {
+    const csv = `title,description,duration_minutes,presenter_name
+"Scaling, Carefully","A ""practical"" guide",30,Jane`
+    const { rows, errors } = parseAndValidateCsv(csv)
+    expect(errors).toHaveLength(0)
+    expect(rows[0].title).toBe('Scaling, Carefully')
+    expect(rows[0].description).toBe('A "practical" guide')
+  })
+
+  it('parses multiline quoted fields', () => {
+    const csv = `title,description,duration_minutes,presenter_name
+My Talk,"Line one
+Line two",30,Jane`
+    const { rows, errors } = parseAndValidateCsv(csv)
+    expect(errors).toHaveLength(0)
+    expect(rows[0].description).toBe('Line one\nLine two')
+  })
+
+  it('preserves quoted optional field content', () => {
+    const csv = `title,description,duration_minutes,presenter_name
+My Talk,"  keep surrounding spaces  ",30,Jane`
+    const { rows, errors } = parseAndValidateCsv(csv)
+    expect(errors).toHaveLength(0)
+    expect(rows[0].description).toBe('  keep surrounding spaces  ')
+  })
 })
