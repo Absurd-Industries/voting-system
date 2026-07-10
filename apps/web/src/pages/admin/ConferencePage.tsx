@@ -128,22 +128,22 @@ export default function ConferencePage() {
     : false
   const nextBoundary = isCurrentlyOpen ? fromDatetimeLocal(closesAt) : fromDatetimeLocal(opensAt)
 
-  if (isLoading) return <div className="text-gray-500">Loading...</div>
+  if (isLoading) return <div className="text-sm uppercase tracking-wide text-stencil">Loading…</div>
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Admin</p>
-          <h1 className="text-2xl font-bold text-slate-950">{conf ? 'Conference Settings' : 'Create Conference'}</h1>
+          <p className="supertitle">Admin</p>
+          <h1 className="page-title">{conf ? 'Conference Settings' : 'Create Conference'}</h1>
         </div>
         {conf && (
-          <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm">
-            <span className={isCurrentlyOpen ? 'font-semibold text-emerald-700' : 'font-semibold text-amber-700'}>
+          <div className="kp-card px-4 py-3 text-sm">
+            <span className={isCurrentlyOpen ? 'font-bold uppercase text-funded' : 'font-bold uppercase text-ink-faint'}>
               {isCurrentlyOpen ? 'Voting open' : 'Voting closed'}
             </span>
             {nextBoundary && nextBoundary > now && (
-              <span className="ml-2 text-slate-500">
+              <span className="ml-2 text-stencil">
                 {isCurrentlyOpen ? 'closes in' : 'opens in'} {formatDuration(nextBoundary - now)}
               </span>
             )}
@@ -151,124 +151,114 @@ export default function ConferencePage() {
         )}
       </div>
 
-      {error && <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
-      {success && <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{success}</div>}
+      {error && <div className="status-error">{error}</div>}
+      {success && <div className="status-open">{success}</div>}
 
       {/* Conference details */}
-      <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h2 className="text-lg font-semibold text-slate-950">Details</h2>
+      <section className="kp-card space-y-4 p-5 sm:p-6">
+        <h2 className="section-title">Details</h2>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Name *</label>
-          <input value={name} onChange={e => setName(e.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
+          <label className="kp-label">Name *</label>
+          <input value={name} onChange={e => setName(e.target.value)} className="kp-input" />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
-          <textarea value={description} onChange={e => setDescription(e.target.value)}
-            rows={3} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
+          <label className="kp-label">Description</label>
+          <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className="kp-input" />
         </div>
-        <button onClick={() => saveConference.mutate()}
-          disabled={!name || saveConference.isPending}
-          className="min-h-11 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-50">
-          {saveConference.isPending ? 'Saving...' : 'Save Details'}
+        <button onClick={() => saveConference.mutate()} disabled={!name || saveConference.isPending} className="btn-ink">
+          {saveConference.isPending ? 'Saving…' : 'Save Details'}
         </button>
       </section>
 
-      {/* Voting window — only show once conference exists */}
+      {/* Voting window - only show once conference exists */}
       {conf && (
-        <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <section className="kp-card space-y-4 p-5 sm:p-6">
           <div>
-            <h2 className="text-lg font-semibold text-slate-950">Voting Window</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="section-title">Voting Window</h2>
+            <p className="mt-1 text-sm text-stencil">
               {isForced ? 'Manual override is active.' : 'Scheduled voting follows the local date and time below.'}
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Opens At</label>
-              <input type="datetime-local" value={opensAt} onChange={e => setOpensAt(e.target.value)}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
+              <label className="kp-label">Opens At</label>
+              <input type="datetime-local" value={opensAt} onChange={e => setOpensAt(e.target.value)} className="kp-input" />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Closes At</label>
-              <input type="datetime-local" value={closesAt} onChange={e => setClosesAt(e.target.value)}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200" />
+              <label className="kp-label">Closes At</label>
+              <input type="datetime-local" value={closesAt} onChange={e => setClosesAt(e.target.value)} className="kp-input" />
             </div>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Override Status</label>
-            <div className="flex gap-3">
+            <label className="kp-label mb-2">Override Status</label>
+            <div className="flex gap-4">
               {(['scheduled', 'open', 'closed'] as const).map(s => (
-                <label key={s} className="flex items-center gap-1 text-sm cursor-pointer">
-                  <input type="radio" name="force" value={s}
+                <label key={s} className="flex cursor-pointer items-center gap-1.5 text-sm uppercase tracking-wide">
+                  <input type="radio" name="force" value={s} className="accent-stamp"
                     checked={forceStatus === s} onChange={() => setForceStatus(s)} />
-                  <span className="capitalize">{s}</span>
+                  <span>{s}</span>
                 </label>
               ))}
             </div>
             {forceStatus !== 'scheduled' && (
-              <p className="mt-1 text-xs text-amber-700">Override active; schedule dates are ignored.</p>
+              <p className="mt-1 text-xs text-ink-faint">Override active; schedule dates are ignored.</p>
             )}
           </div>
-          <button onClick={() => saveConference.mutate()}
-            disabled={saveConference.isPending}
-            className="min-h-11 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-50">
-            {saveConference.isPending ? 'Saving...' : 'Save Voting Settings'}
+          <button onClick={() => saveConference.mutate()} disabled={saveConference.isPending} className="btn-ink">
+            {saveConference.isPending ? 'Saving…' : 'Save Voting Settings'}
           </button>
         </section>
       )}
 
-      {/* Vote budget — only show once conference exists */}
+      {/* Vote budget - only show once conference exists */}
       {conf && (
-        <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <section className="kp-card space-y-4 p-5 sm:p-6">
           <div>
-            <h2 className="text-lg font-semibold text-slate-950">Vote Budget</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="section-title">Vote Budget</h2>
+            <p className="mt-1 text-sm text-stencil">
               Each voter gets this many votes. Talks are ranked by total votes; duration can be decided later while scheduling.
             </p>
           </div>
           <div className="max-w-xs">
-            <label className="mb-1 block text-sm font-medium text-slate-700">Votes per voter</label>
+            <label className="kp-label">Votes per voter</label>
             <input
               type="number"
               min="0"
               value={votesPerVoter}
               onChange={e => setVotesPerVoter(e.target.value)}
-              className="min-h-11 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+              className="kp-input min-h-11"
             />
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-stencil">
               Set to 0 to keep voting closed until the ballot is ready.
             </p>
           </div>
-          <button onClick={() => saveConference.mutate()}
-            disabled={saveConference.isPending || voteBudget < 0}
-            className="min-h-11 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-50">
-            {saveConference.isPending ? 'Saving...' : 'Save Vote Budget'}
+          <button onClick={() => saveConference.mutate()} disabled={saveConference.isPending || voteBudget < 0} className="btn-ink">
+            {saveConference.isPending ? 'Saving…' : 'Save Vote Budget'}
           </button>
         </section>
       )}
 
       {conf && (
-        <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <section className="kp-card space-y-4 p-5 sm:p-6">
           <div>
-            <h2 className="text-lg font-semibold text-slate-950">Admins</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="section-title">Admins</h2>
+            <p className="mt-1 text-sm text-stencil">
               The first synced user becomes admin. Configured admin emails can add more.
             </p>
           </div>
-          <div className="divide-y divide-slate-200 rounded-md border border-slate-200">
+          <div className="divide-y divide-ink/15 border-2 border-ink">
             {admins.map(admin => (
               <div key={admin.id} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{admin.email}</p>
-                  <p className="text-xs text-slate-500">Added {formatDateTime(admin.created_at)}</p>
+                  <p className="text-sm font-bold text-ink">{admin.email}</p>
+                  <p className="text-xs text-stencil">Added {formatDateTime(admin.created_at)}</p>
                 </div>
                 <button
                   onClick={() => {
                     if (confirm(`Remove admin access for ${admin.email}?`)) removeAdmin.mutate(admin.id)
                   }}
                   disabled={removeAdmin.isPending || admins.length <= 1}
-                  className="min-h-11 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn-label"
                 >
                   Remove
                 </button>
@@ -279,28 +269,26 @@ export default function ConferencePage() {
       )}
 
       {conf && (
-        <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <section className="kp-card space-y-4 p-5 sm:p-6">
           <div>
-            <h2 className="text-lg font-semibold text-slate-950">Audit Trail</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="section-title">Audit Trail</h2>
+            <p className="mt-1 text-sm text-stencil">
               Recent admin actions that affect the ballot, access, voting rules, or publication.
             </p>
           </div>
           {auditLogs.length === 0 ? (
-            <div className="rounded-md border border-dashed border-slate-300 p-4 text-sm text-slate-500">
-              No audit events yet.
-            </div>
+            <div className="empty-state">No audit events yet.</div>
           ) : (
-            <div className="divide-y divide-slate-200 rounded-md border border-slate-200">
+            <div className="divide-y divide-ink/15 border-2 border-ink">
               {auditLogs.map(log => (
                 <div key={log.id} className="p-3 text-sm">
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="font-medium text-slate-900">
+                    <p className="font-bold uppercase text-ink">
                       {log.action.replace(/_/g, ' ')} {log.target_type.replace(/_/g, ' ')}
                     </p>
-                    <p className="text-xs text-slate-500">{formatDateTime(log.created_at)}</p>
+                    <p className="text-xs text-stencil">{formatDateTime(log.created_at)}</p>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-stencil">
                     {log.admin_email ?? 'Unknown admin'}
                   </p>
                 </div>

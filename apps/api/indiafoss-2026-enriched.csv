@@ -1,0 +1,523 @@
+title,description,duration_minutes,presenter_name,presenter_bio,presenter_email,talk_type,cfp_url,cfp_content,references
+"Design once, reuse everywhere : Modular Electronics in Practice","Modern electronics engineering follows the same principles that made software scalable: abstraction, modularity, reuse, and standardization. This talk shows how modular thinking breaks complex hardware into reusable functional blocks to build reliable systems faster and cheaper.","","Srinivasan M","Srinivasan M (Founder, PCBCUPID) develops open source hardware platforms helping developers and startups build products efficiently through ready-to-use boards, modules, and tools.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/a70bb4f4q1","Hardware development is often seen as difficult, slow, and expensive compared to software. But in reality, modern electronics engineering follows many of the same principles that made software scalable: abstraction, modularity, reuse, standardization, and iteration.
+
+This talk describes how modular thinking transforms electronics building. It covers breaking complex systems into reusable functional blocks including power systems, communication interfaces, sensor modules, and compute layers that appear across aerospace, industrial automation, medical, commercial, and space applications.
+
+Key topics addressed: hardware architecture modeling, functional decomposition, reusable circuit design, prototyping workflows, manufacturing scalability, testing pipelines, component selection for modularity, and practical engineering patterns for reducing costs and iteration cycles.
+
+## Key Takeaways
+- Modular engineering principles for hardware design
+- Creating reusable electronics building blocks
+- Standardizing connectors, interfaces, and power systems
+- Modular testing and debugging techniques
+- Reducing iteration cycles and manufacturing friction
+- Scaling prototypes to production
+
+## About the Speaker
+Srinivasan M (Founder, PCBCUPID) develops open source hardware platforms helping developers and startups build products efficiently through ready-to-use boards, modules, and tools.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: CERN OHL-S","[{""title"":""PCBCUPID — Chennai FOSS 2026"",""url"":""https://events.pcbcupid.com/foss/chennai-foss-2026/""},{""title"":""Talk demo (YouTube)"",""url"":""https://www.youtube.com/watch?v=Max74m77wUk""},{""title"":""Talk demo (YouTube)"",""url"":""https://www.youtube.com/watch?v=Cvt5qL3gbGY""},{""title"":""LinkedIn — Srinivasan M"",""url"":""https://www.linkedin.com/in/srinivasan-m-421179179/""}]"
+"OAQ : An Air Quality Monitoring system made for community","OAQ is an open, affordable, and adaptable air quality monitoring device integrating PM, VOC, temperature, and humidity sensors on a single PCB with modular housing. It works as a portable personal monitor or indoor unit, does local sensor fusion, transmits over BLE, and supports Meshtastic LoRa integration.","","Bhuvan Makes","Bhuvan Makes (Maker, Air Calibre). Bhuvan Bagwe hosts Educatorz (75k subscribers) and operates Bhuvan Makes (30k subscribers) sharing open-source hardware projects, 3D printing, and electronics work.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/344vqt83ni","Air quality monitoring in India faces significant accessibility challenges. This is an open-source initiative to build an open, affordable, and adaptable air quality monitoring device serving multiple contexts without requiring separate systems.
+
+The hardware integrates particulate matter, VOC, temperature, and humidity sensors on a single PCB with modular housing. It functions in two configurations: a portable personal-use form and an indoor monitor variant with OLED display. Both share identical electronics and processing while differing in physical design and interaction patterns.
+
+The system performs local sensor fusion and transmits data via BLE. Testing includes high-altitude deployments on weather balloons. The device supports Meshtastic LoRa integration.
+
+## Key Takeaways
+- Building versatile sensor systems for personal and citizen science use
+- Benefits of local, offline-first data processing
+- Weather balloon deployment experiences and data collection methods
+- Integrating open hardware with existing ecosystems like Meshtastic
+
+## About the Speaker
+Bhuvan Makes (Maker, Air Calibre). Bhuvan Bagwe hosts Educatorz (75k subscribers) and operates Bhuvan Makes (30k subscribers) sharing open-source hardware projects, 3D printing, and electronics work.
+
+## Details
+- Format: Lightning Talk (Intermediate)
+- Track: Open Hardware
+- License: CERN OHL-W","[{""title"":""GitHub — Project OAQ"",""url"":""https://github.com/Air-Calibre/Project-OAQ-Open-Air-Quality-Sampler""},{""title"":""Instructables — bhuvanmakes"",""url"":""https://www.instructables.com/member/bhuvanmakes/""}]"
+"Migrating from SW to Clinical grade HW: An Open MVDR Beamformer","MVDR beamforming sharpens focus in medical ultrasound but normally needs server hardware or proprietary ASICs. This project implements the adaptive weights calculator on a PYNQ-Z2 FPGA using only zero-cost open tools, showing float32 produces diagnostically clear images while beating a 24-core Xeon at 50x lower power.","","Athi Ram R S","Picked up hardware in 2nd year of college. Presented first paper in PolyU Hong Kong at 21. Worked with NIELIT Calicut, IBM, and currently at IIT Madras in the RISE Group on Shakti, India's first indigenous industrial-grade RISC-V processor.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/0us2gfjiq1","The MVDR beamforming is the algorithm inside medical ultrasound machines that sharpens focus and suppresses noise from unwanted directions. Computing it in real time requires QR matrix decomposition on every time sample, expensive enough that it normally runs on server hardware or proprietary ASICs.
+
+This project implements the critical part of the architecture (the adaptive weights calculator) on a PYNQ-Z2 board using only zero-cost tools. A systolic array of Givens rotation QR decomposer PEs is implemented in C++ using Vitis HLS and Vivado, running on float32 arithmetic. The float32 version produces a diagnostically clear reconstruction where 64-bit fixed-point corrupts the image. The production board (ZCU-104) beat a 24-core Xeon at 50x lower power, running at a 100MHz clock versus 2.20GHz.
+
+## Key Takeaways
+A hardware workflow applicable to software engineers and junior developers transitioning to hardware development, emphasizing accessibility through educational tools and replicable results.
+
+## About the Speaker
+Picked up hardware in 2nd year of college. Presented first paper in PolyU Hong Kong at 21. Worked with NIELIT Calicut, IBM, and currently at IIT Madras in the RISE Group as a Project Associate on Shakti, India's first indigenous industrial-grade RISC-V processor.
+
+## Details
+- Format: Lightning Talk (Beginner)
+- Track: Open Hardware
+- License: Apache License, Version 2.0","[{""title"":""IEEE paper"",""url"":""https://ieeexplore.ieee.org/document/9170633""},{""title"":""GitHub — README_FOR_FOSS"",""url"":""https://github.com/ARX-0/README_FOR_FOSS/blob/main/README.md""}]"
+"Introduction to Physical AI: Getting Started with Intelligent Robots","An introduction to Physical AI for beginners, covering what it is, how these systems work, and how to start building them. Combines theory with live demonstrations of LeRobot, Reachy Mini, and OpenDuck Mini robots, walking through the full workflow from hardware and sensors to data collection, training, and deployment.","","Kiara Bhandari","Kiara Bhandari is a high school student at Oberoi International School and MakerWorks Lab member who ranked 4th nationally in WRO. Primary speaker Vinay Ummadi is a Senior Applied AI Scientist and IIT Kharagpur alumnus who founded MakerWorks Lab in Mumbai.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/ds99k9i693","Physical AI is quickly becoming one of the most exciting areas in AI, but it can be difficult to know where to begin. This talk is an introduction for anyone who wants to understand what Physical AI is, how these systems work, and how to start building them.
+
+The presentation combines theory with hands-on demonstrations featuring LeRobot, Reachy Mini, and OpenDuck Mini robots, covering the complete workflow from hardware and sensors through data collection, model training, and deployment.
+
+## Key Takeaways
+- Understanding Physical AI as an emerging frontier
+- Learning end-to-end workflows
+- Experiencing live robot demonstrations
+- Exploring open-source frameworks
+- Discovering tools and learning resources
+
+## About the Speaker
+Kiara Bhandari is a high school student at Oberoi International School and MakerWorks Lab member who ranked 4th nationally in WRO. Primary speaker Vinay Ummadi is a Senior Applied AI Scientist and IIT Kharagpur alumnus who founded MakerWorks Lab in Mumbai.
+
+## Details
+- Format: Talk (Beginner, First Talk)
+- Track: Open Hardware
+- License: CC-BY-SA","[{""title"":""LinkedIn — Vinay Ummadi"",""url"":""https://linkedin.com/in/vinayummadi""},{""title"":""LinkedIn — Kiara Bhandari"",""url"":""https://linkedin.com/in/kiara-bhandari-9919a62b8/""}]"
+"Minnow: An Open Platform for Ground Swarm Robotics","Minnow is an affordable, open-source kit of small ground robots for studying decentralized swarm behavior, targeted at researchers, students, educators, and builders. With a round PCB chassis, ESP32-S3, differential drive, ToF sensors, and IR communication ring at under $35 per unit, it treats swarm robotics as a scientific instrument rather than a deployment robot.","","Balu Babu","Balu Babu, Engineer. ""I like to make stuff."" GitHub: https://github.com/balub","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/7pt1ibasdd","Swarm robotics explores how numerous simple robots collaborate to produce intricate behaviors. Entry barriers remain high due to expensive, proprietary, or lab-specific platforms. Minnow addresses accessibility by offering an affordable, open-source kit of small ground robots designed for researchers, students, educators, and builders.
+
+The presentation covers robot design (round PCB chassis, ESP32-S3, differential drive, ToF sensors, IR communication ring), affordability targets (under $35 per unit), decentralized control philosophy, ESP-NOW peer-to-peer communication, and India-first sourcing challenges.
+
+## Key Takeaways
+- Practical introduction to swarm robotics and real-world experimental challenges
+- Minnow's design for studying decentralized swarm behavior
+- Component selection (ESP32-S3, ToF sensors, IR communication)
+- Hardware-software design trade-offs for affordability and research utility
+- India-focused sourcing and manufacturing challenges
+
+## About the Speaker
+Balu Babu, Engineer. ""I like to make stuff."" GitHub: https://github.com/balub
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: CC-BY-SA","[{""title"":""GitHub — Minnow"",""url"":""https://github.com/balub/minnow""}]"
+"Holding It Together: A Talk About Screws","Fasteners are overlooked in hardware projects: while designers document PCBs and firmware, screws and standoffs often go undocumented, making projects harder to reproduce. This talk covers screw types, brass standoffs, self-tapping screws, heat-set inserts, common mistakes, and how to create a fastener manifest.","","Balu Babu","Balu Babu, Engineer. ""I like to make stuff."" GitHub: https://github.com/balub","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/7k7jcbepjo","This talk addresses how fasteners are overlooked in hardware projects. While designers document PCBs and firmware, screws and standoffs often remain undocumented, making projects harder to reproduce.
+
+The speaker covers screw types (M2, M2.5, M3), brass standoffs, self-tapping screws, and heat-set inserts, plus their effects on assembly. Common mistakes discussed include stripped plastic, cracked acrylic, and missing fastener documentation.
+
+## Key Takeaways
+- Fasteners as essential design documentation components
+- How screws, standoffs, inserts, washers affect assembly and repairability
+- Common fastener choices for PCBs, 3D prints, laser-cut parts
+- Creating a fastener manifest for hardware projects
+
+## About the Speaker
+Balu Babu, Engineer. ""I like to make stuff."" GitHub: https://github.com/balub
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware
+- License: CC-BY-SA","[{""title"":""onlyscrews.in"",""url"":""https://onlyscrews.in/""}]"
+"Open Source Scientific Harware for Citizen Science","Citizen science has grown rapidly, but access to specialized hardware is a major barrier to participation. This talk shows how low-cost, off-the-shelf devices like Arduino boards, camera boards, and 3D printing can be repurposed for data collection and analysis, aiming to inspire a new wave of accessible citizen science innovation.","","Balaji Muthusubramanian","Dr. Balaji Muthusubramanian holds a PhD in Astrophysics from the University of Cologne and is Head of Data & AI at StackNexus. He founded 4pi Astronomics and created Skill-Ex.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/1crh77ogup","Citizen science has experienced significant growth over the past decade, with many amateur enthusiasts contributing to ongoing research. One major challenge is access to specialized hardware. Numerous scientific disciplines can benefit from low-cost, off-the-shelf devices such as Arduino boards, camera boards, and 3D printing, which can be repurposed for data collection and analysis. This talk aims to inspire a new wave of innovation in citizen science and encourage researchers to think creatively about accessible technologies.
+
+## Key Takeaways
+- Introducing a FOSS project or new version
+- Contributing to FOSS
+- Technology architecture
+
+## About the Speaker
+Dr. Balaji Muthusubramanian holds a PhD in Astrophysics from the University of Cologne and is Head of Data & AI at StackNexus. He founded 4pi Astronomics (citizen science astronomy) and created Skill-Ex (AI-powered learning platform).
+
+## Details
+- Format: Talk (Intermediate, First Talk)
+- Track: Open Hardware","[{""title"":""Citizen scientists (opensource.com)"",""url"":""https://opensource.com/article/18/5/citizen-scientists""},{""title"":""LinkedIn — Dr. Balaji"",""url"":""https://www.linkedin.com/in/astrobalaji/""}]"
+"CNC4Everyone - How we built a CNC machine for every classroom, college and makerspace","Urumi is a modular, open-source CNC machine for education that replaces monolithic controllers with individual networked stepper nodes over RS-485, so single-axis failures don't shut down the machine. Its browser-based JavaScript CAM stack uses WebSerial, and its vision pipeline uses smartphone photos, ArUco markers, and OpenCV to generate toolpaths from hand-drawn designs.","","Nikhil Nair","Nikhil Nair (Software Engineer, Technology Fellow, Super Fablab Kerala) is a software architect specializing in cyber-physical systems and computer vision.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/1cbj5bhfhf","This talk describes a modular, open-source CNC machine called ""Urumi"" designed for accessibility in educational settings. Key innovation: replacing monolithic controller boards with individual networked stepper nodes via RS-485 bus, enabling single-axis failures without full machine shutdown.
+
+The software stack uses browser-based JavaScript for CAM operations via WebSerial, eliminating server dependencies. Vision processing combines smartphone photography with ArUco markers and OpenCV for perspective correction and automatic toolpath generation from color-coded hand-drawn designs.
+
+## Key Takeaways
+- Modular CNC architectures using independent networked stepper nodes over RS-485
+- Client-side CAM processing in browser JavaScript
+- WebSerial API for direct microcontroller motion control
+- Perspective rectification via OpenCV and ArUco markers
+- Open hardware design philosophy prioritizing repairability and low-cost components
+
+## About the Speaker
+Nikhil Nair (Software Engineer, Technology Fellow, Super Fablab Kerala) is a software architect specializing in cyber-physical systems and computer vision. Co-speakers: Ashish Joy and Akash Edamana, Fab Academy graduates.
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware","[{""title"":""Urumi — Fab Lab Kerala"",""url"":""https://projects.fablabkerala.in/mtm_projects/urumi/""},{""title"":""GitLab — aruco-frame"",""url"":""https://gitlab.cba.mit.edu/quentinbolsee/aruco-frame""}]"
+"Budget Macropad","Budget Macropad is a reverse-engineering effort to combat the high price of custom mechanical macropads by re-using commodity membrane number pads and designing a custom ESP32-S3 board to replace the controller. Custom firmware is written in Zephyr and portable to ZMK, promoting a reduce-reuse-recycle mindset.","","Sahaj Sarup","Sahaj Sarup, Sr. Engineer. Hardware and firmware hacker with over a decade of professional experience in embedded Linux userspace, RTOS (Zephyr), and Yocto/Buildroot, with a strong background in hardware debugging and PCB design.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/1bi2qn1ejl","Budget Macropad is a reverse engineering effort. To combat the high prices of a fully custom mechanical macropad, the speaker looked into re-using commodity membrane number pads and designing a custom board using an ESP32-S3 to replace the controller inside while reusing the existing membrane.
+
+The presentation covers custom firmware written in Zephyr that can be ported to ZMK, and encourages reverse engineering of mass-produced hardware and sustainability through reuse and recycling.
+
+## Key Takeaways
+- Basic reverse engineering
+- Replicating board layout to build custom replacement hardware
+- Introduction to the Budget Macropad project
+- Encouraging a recycle-reduce-reuse mindset
+
+## About the Speaker
+Sahaj Sarup, Sr. Engineer. Hardware and firmware hacker with over a decade of professional experience in embedded Linux userspace, RTOS (Zephyr), and Yocto/Buildroot, with a strong background in hardware debugging and PCB design.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: CERN OHL-S","[{""title"":""GitLab — macrobudget"",""url"":""https://gitlab.com/macrobudget/""}]"
+"Hackable Cat Toys: What Open Projects Can Learn from Designing for Cats","Reelin is an open-source cat toy inspired by fishing rod mechanics, designed to survive impact and unpredictable forces. The talk examines how designing for animals teaches lessons about durability, repairability, and collaborative ecosystems, and advocates treating hardware with the same collaborative principles that transformed software.","","Ruby Paulson","Ruby Paulson, Founder at Ronin Toys. ""An engineer who never worked as one until they had to make toys for their cats, Ruby has about 15 years of experience in writing.""","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/78dgsbagio","Most open hardware projects begin with a technical challenge. Reelin began with cats. The speaker describes an open-source cat toy inspired by fishing rod mechanics, designed to withstand impact and unpredictable forces. The talk examines how designing for animals teaches valuable lessons about durability, repairability, and collaborative ecosystems, and advocates for treating hardware with the same collaborative principles that have transformed software.
+
+## Key Takeaways
+- Unpredictable users drive better product design
+- Creating hackable yet durable hardware
+- Enabling repair, modification, and remixing
+- Releasing consumer products as open projects
+- Cultivating hardware communities rather than customer bases
+
+## About the Speaker
+Ruby Paulson, Founder at Ronin Toys. ""An engineer who never worked as one until they had to make toys for their cats, Ruby has about 15 years of experience in writing.""
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware","[{""title"":""Ronin Toys"",""url"":""https://ronintoys.com""}]"
+"Dev Wallet: An Open Hardware Wallet Built with Rust","Dev Wallet is a Rust-powered open hardware device that pairs with a mobile app to display wallet balance, expense tracking, and transaction information in real time. The design is hackable, with customizable firmware and hardware extensions.","","prowork out","Full-stack developer passionate about building innovative software and hardware solutions. Experienced in React, geospatial technologies, cloud platforms, and AI applications. Currently exploring Rust-based embedded systems.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/fbip66qvn5","Dev Wallet is a Rust-powered open hardware device that pairs with a mobile app to display wallet balance, expense tracking, and transaction information in real time.
+
+## Key Takeaways
+- Rust-based embedded firmware
+- Open hardware and hackable design
+- Mobile app connectivity
+- Balance and expense visualization
+- Customizable firmware and hardware extensions
+
+## About the Speaker
+Full-stack developer passionate about building innovative software and hardware solutions. Experienced in React, geospatial technologies, cloud platforms, and AI applications. Currently exploring Rust-based embedded systems.
+
+## Details
+- Format: Lightning Talk (Beginner)
+- Track: Open Hardware
+- License: MIT License","[{""title"":""GitHub — ble-devwallet"",""url"":""https://github.com/Zacktrex/ble-devwallet""},{""title"":""LinkedIn — protic-minz"",""url"":""https://www.linkedin.com/in/protic-minz""}]"
+"My zero-to-hero journey deploying a fiber-optic and wireless community mesh","The Tamarind Valley Collective is 50 families restoring 75 acres of hillside into a food forest. This talk documents the zero-to-hero journey of building community internet: mapping the area on OpenStreetMap, deploying fiber optic with jugaad methods, establishing WiFi/BLE/LoRa mesh networks, and reusing recycled equipment.","","Kiran Jonnalagadda","""I'm a member of the Tamarind Valley Collective, and a co-founder of Hasgeek, where I help tech communities do better through a culture of peer review.""","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/9e9bajmm07","The Tamarind Valley Collective is a unique experiment: 50 families came together pre-pandemic to restore 75 acres of hillside into a food forest and sustainable farm, in small parcels privately owned but collectively managed.
+
+This is a community internet infrastructure project. Key accomplishments included mapping the area on OpenStreetMap, deploying fiber optic infrastructure creatively, establishing WiFi/BLE/LoRa mesh networks, and utilizing recycled equipment throughout.
+
+## Key Takeaways
+""You can just do things."" Themes: OpenStreetMap mapping, fiber optic deployment with jugaad methodology, wireless mesh networking, equipment recycling.
+
+## About the Speaker
+""I'm a member of the Tamarind Valley Collective, and a co-founder of Hasgeek, where I help tech communities do better through a culture of peer review.""
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware
+- License: CC BY-SA","[{""title"":""Tamarind Valley Collective"",""url"":""https://tvc.farm""},{""title"":""OpenStreetMap area"",""url"":""https://www.openstreetmap.org/#map=16/12.35028/77.64544""},{""title"":""X — @jackerhack"",""url"":""https://x.com/jackerhack""}]"
+"Breaking Into Chip Design: Building a Digital Design Workflow with Open-Source Tools","Chip design is often seen as inaccessible due to expensive EDA tools, but open-source tooling lets students learn digital design with just a laptop. This talk walks through RTL development in Verilog, simulation with Icarus Verilog, waveform debugging in GTKWave, and FPGA prototyping, plus a roadmap for students into VLSI and computer architecture.","","Abhijna Laxmi","Abhijna Laxmi, student and creator. Electronics and Communication Engineering student specializing in VLSI Design at NMAM Institute of Technology, Nitte.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/19gqsgi25t","Modern chip design is often perceived as inaccessible due to expensive EDA tools and proprietary workflows. A growing ecosystem of open-source hardware tools allows students, hobbyists, and developers to learn digital design using only a laptop.
+
+This talk presents a practical digital design workflow covering RTL development in Verilog, simulation and verification, waveform debugging, and FPGA prototyping. It compares open-source and industry-standard workflows and provides a roadmap for students interested in VLSI, FPGA development, and computer architecture.
+
+## Key Takeaways
+- How to stand up a zero-cost digital design environment on Linux
+- Compiling and simulating Verilog with Icarus Verilog
+- Visual debugging with GTKWave
+- How open-source EDA tools translate to industry VLSI skills
+
+## About the Speaker
+Abhijna Laxmi, student and creator. Electronics and Communication Engineering student specializing in VLSI Design at NMAM Institute of Technology, Nitte.
+
+## Details
+- Format: Lightning Talk (Beginner)
+- Track: Open Hardware
+- License: CERN OHL-S v2 or MIT License","[{""title"":""Walkthrough (YouTube)"",""url"":""https://youtu.be/LKz7dkbUMsk""},{""title"":""LinkedIn — Abhijna Laxmi"",""url"":""https://www.linkedin.com/in/abhijna-laxmi-659143298""}]"
+"Designing an Open-Source Product for Play","Open-source hardware is usually associated with dev boards and industrial tools, but what happens when openness is applied to something designed purely for play? This talk presents Reelin, an open-source interactive cat toy by Ronin Toys, as a case study in openness as a design philosophy rather than just a technical feature.","","Ruby Paulson","Ruby Paulson is Founder of Ronin Toys, ""a nature-loving queer engineer"" with 15 years of experience in technical writing, content strategy, and copywriting.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/d66dkv05b8","Open-source hardware is often associated with development boards, robotics, or industrial tools. But what happens when we apply the same principles of openness to something designed purely for play? This talk presents Reelin, an open-source interactive cat toy by Ronin Toys, as a case study in applying openness as a design philosophy rather than merely a technical feature.
+
+## Key Takeaways
+- What it takes to release a physical product as open source
+- Structuring hardware documentation for builders and contributors
+- Design decisions enabling repair, modification, and remixing
+- Manufacturing trade-offs in open hardware products
+- Licensing considerations for open-source hardware
+
+## About the Speaker
+Ruby Paulson is Founder of Ronin Toys, ""a nature-loving queer engineer"" with 15 years of experience in technical writing, content strategy, and copywriting.
+
+## Details
+- Format: Lightning Talk (Beginner, First Talk)
+- Track: Open Hardware","[{""title"":""Ronin Toys"",""url"":""https://ronintoys.com""}]"
+"KiCAD-Prism: Self-Hosted Hardware Collaboration Workflow for Startups and Student Teams","KiCAD-Prism is a self-hostable, open-source project management workspace for electronics teams that keeps existing KiCAD projects, Git repos, and standard design files as the source of truth. It bridges the gap in professional workflows (review, sharing, libraries, releases, visual diffs) without forcing teams onto expensive proprietary platforms.","","Krishna Swaroop Dhulipalla","Krishna Swaroop Dhulipalla is a Lead Electronics Engineer at Pixxel, working on high-reliability electronics and edge-compute systems for satellite missions.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/fn6lfnqdif","KiCAD-Prism is a self-hostable, open-source project management workspace for electronics teams that keeps existing KiCAD projects, Git repositories and standard design files as the source of truth.
+
+KiCAD has democratized PCB design, but professional workflows around design review, project sharing, component libraries, releases, and collaboration remain underdeveloped, often forcing teams toward expensive proprietary platforms. KiCAD-Prism bridges this gap using open-source tooling and Git-backed workflows, enabling shared workspaces that simplify review, release, and collaboration without requiring all stakeholders to learn KiCAD.
+
+## Key Takeaways
+- KiCAD-and-Git workflows supporting professional collaboration without proprietary ECAD
+- Where KiCAD-Prism fits: design review, project sharing, library governance, visual diffs, releases, documentation
+- Enabling non-PCB stakeholders to review designs without learning KiCAD
+
+## About the Speaker
+Krishna Swaroop Dhulipalla is a Lead Electronics Engineer at Pixxel, working on high-reliability electronics and edge-compute systems for satellite missions.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: Apache License, Version 2.0","[{""title"":""GitHub — KiCAD-Prism"",""url"":""https://github.com/krishna-swaroop/KiCAD-Prism""},{""title"":""GitHub — kicanvas"",""url"":""https://github.com/theacodes/kicanvas.git""},{""title"":""GitHub — InteractiveHtmlBom"",""url"":""https://github.com/openscopeproject/InteractiveHtmlBom""}]"
+"Creating a customizable e-paper dashboard","E-paper displays are now in price tags, transit signs, and hobbyist projects, ideal for battery-powered use. This talk covers building a user-customizable dashboard of swappable widgets, e-paper constraints (slow refresh, limited color), and compares two approaches: fully embedded firmware versus a thin-client model with server-side rendering.","","Ayaskant Panigrahi","Ayaskant Panigrahi is an XR and Systems Software Engineer with a passion for immersive technology and a committed advocate for the FOSS ecosystem.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/7ibeuelafv","The speaker explores e-paper display development, noting these screens now appear in price tags, transit signs, and hobbyist projects with practical applications for battery-powered deployments. The core project is a user-customizable dashboard of swappable widgets like weather, time, and calendar that anyone can configure or extend.
+
+Key constraints discussed include refresh speed limitations and color support challenges. Two approaches are compared: fully embedded firmware using Arduino/PlatformIO or MicroPython, versus a thin-client model where a backend server renders and pushes a pre-rendered image to the device.
+
+## Key Takeaways
+- Developing for e-paper screens considering their advantages and challenges
+- FOSS projects in this space
+- Thin client vs. fully embedded approaches
+
+## About the Speaker
+Ayaskant Panigrahi is an XR and Systems Software Engineer with a passion for immersive technology and a committed advocate for the FOSS ecosystem.
+
+## Details
+- Format: Lightning Talk (Beginner)
+- Track: Open Hardware
+- License: CC BY-SA 4.0","[{""title"":""ayas.fyi — e-paper"",""url"":""https://www.ayas.fyi/tags/epaper/""},{""title"":""GitHub — trmnl-firmware"",""url"":""https://github.com/usetrmnl/trmnl-firmware""},{""title"":""Soldered Inkplate"",""url"":""https://soldered.com/collections/inkplate-e-paper-displays""}]"
+"HackerFab IITB: democratizing semiconductor fabrication","HackerFab IITB is India's first open-source, student-run, low-cost semiconductor fabrication lab, building open educational tools (litho, sputter) to make chips. The talk traces the journey from a hostel room to producing working MOSCAP devices, with a live photolithography demo, aiming to make chip fabrication accessible to Indian students.","","Jai Bellare","Jai Bellare is a BTech student in Electrical Engineering at IIT Bombay. Won Best Poster Award at the National Academy of Sciences India Annual Symposium 2024.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/8q47utd51e","HackerFab IITB is India's first open-source, student-run, low-cost semiconductor fabrication lab. The team builds open-source educational tools (like litho, sputter) to make chips, addressing a critical gap: Indian college students seldom get hands-on exposure to actually building semiconductor chips.
+
+Objectives: (1) Make semiconductor fabrication accessible and affordable for Indian students; (2) Create a pipeline of industry-ready talent; (3) Reduce fabrication setup costs from crores to lakhs; (4) Establish a replicable template for other Indian institutes. The session covers the journey from hostel room to producing working MOSCAP devices, with a live photolithography demo.
+
+## Key Takeaways
+- Open hardware can take India to the state of the art in unexplored areas
+- Open hardware empowers students regardless of financial situation
+
+## About the Speaker
+Jai Bellare is a BTech student in Electrical Engineering at IIT Bombay. Won Best Poster Award at the National Academy of Sciences India Annual Symposium 2024.
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware
+- License: MIT License","[{""title"":""GitHub — HackerFab IITB"",""url"":""https://github.com/hackerfabiitb""},{""title"":""Demo (YouTube)"",""url"":""https://youtu.be/UWHMm4Qjpmo""},{""title"":""hackerfabiitb.github.io"",""url"":""https://hackerfabiitb.github.io/""}]"
+"HackerFab IITB: democratizing semiconductor fabrication","HackerFab IITB is India's first open-source, student-run, low-cost semiconductor fabrication lab, developing educational chip-making tools. The talk covers the team's journey from hostel-room prototyping to functional MOSCAP devices and a photolithography demonstration, aiming to make fabrication accessible and aspirational for Indian college students.","","Jai Bellare","Jai Bellare, Student Researcher, HackerFab IIT Bombay. BTech student in Electrical Engineering at IIT Bombay.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/4pm3u3odmn","HackerFab IITB is India's first open-source, student-run, low-cost semiconductor fabrication lab. The initiative develops educational tools for chip manufacturing and extends a global open-source community focused on fab innovation.
+
+Objectives: (1) Make semiconductor fabrication accessible and aspirational for Indian college students; (2) Develop an industry-ready talent pipeline; (3) Reduce fabrication setup costs from crores to lakhs; (4) Establish a replicable template. The session covers the journey from hostel-room prototyping to functional MOSCAP devices, with a photolithography demonstration.
+
+## Key Takeaways
+- Open hardware can take India to the state of the art in unexplored areas short-term
+- Open hardware empowers students regardless of financial or geographical constraints
+
+## About the Speaker
+Jai Bellare, Student Researcher, HackerFab IIT Bombay. BTech student in Electrical Engineering at IIT Bombay.
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware
+- License: MIT License","[{""title"":""GitHub — HackerFab IITB"",""url"":""https://github.com/hackerfabiitb""},{""title"":""hackerfabiitb.github.io"",""url"":""https://hackerfabiitb.github.io/""},{""title"":""Demo (YouTube)"",""url"":""https://youtu.be/UWHMm4Qjpmo""}]"
+"Building Open Source Music Hardware in India - Tarab Instruments","This talk is about building open source music hardware in India and the practical process knowledge required to actually do it here. Starting from a compact Arduino-based MIDI controller and DIY Eurorack modules, it covers component sourcing, PCB manufacturing, KiCad/FreeCAD workflows, and custom KiCad plugins.","","Syed Ali","Syed Ali is a musician and music electronics researcher and educator based in Bangalore. His Tarab Instruments practice encompasses music education, DIY audio hardware design, and audio software development.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/3nr9benq94","This talk is about building open source music hardware in India, and the practical process knowledge required to actually do it here.
+
+The project began when the speaker wanted a compact MIDI controller and built an Arduino-based version rather than buying expensive commercial options. This led to designing DIY Eurorack modules and discovering undocumented challenges: component sourcing, PCB manufacturing, prototyping, and community resources. Skills developed included KiCad and FreeCAD/Fusion, plus custom KiCad plugins to automate workflows.
+
+## Key Takeaways
+- Realistic assessment of designing/building MIDI and Eurorack hardware in India
+- Practical sourcing map for components, PCBs, and panels with cost estimates
+- Learning KiCad and FreeCAD/Fusion; writing custom plugins
+- Building upon existing open hardware rather than starting from scratch
+
+## About the Speaker
+Syed Ali is a musician and music electronics researcher and educator based in Bangalore. His Tarab Instruments practice encompasses music education, DIY audio hardware design, and audio software development.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: CC-BY-SA, CERN OHL-W","[{""title"":""Tarab Instruments"",""url"":""https://tarabinstruments.qaree.bi""},{""title"":""GitHub — tarab-midi-64"",""url"":""https://github.com/basisvectors/tarab-midi-64""},{""title"":""Instagram — tarab_instruments"",""url"":""https://instagram.com/tarab_instruments""}]"
+"Hardware Trojan - Why did it not let me sleep","A talk about discovering the concept of the hardware Trojan, different from a software Trojan in that the Trojan is a combination of a few logic gates. The speaker shares the journey of studying the problem and finding a solution, and why it matters to everyday electronics consumers.","","Rio Roy","Rio Roy is a post-silicon verification engineer at PI Semi India Pvt Ltd and describes himself as an ""Electronics and semiconductor enthusiast.""","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/cgk2r10rmq","A talk about how the speaker discovered the concept of the hardware Trojan, different from a software Trojan in that the Trojan is a combination of a few logic gates, and the journey to study and find a solution for it.
+
+## Key Takeaways
+What hardware Trojans are, their relevance to everyday electronics consumers, and potential resolution approaches.
+
+## About the Speaker
+Rio Roy is a post-silicon verification engineer at PI Semi India Pvt Ltd and describes himself as an ""Electronics and semiconductor enthusiast.""
+
+## Details
+- Format: Lightning Talk (Beginner)
+- Track: Open Hardware","[{""title"":""Instagram reel"",""url"":""https://www.instagram.com/reel/DBS1vdgs-rz/""}]"
+"Why Most Chip Ideas Never Become Products: The Missing Journey from RTL to Reality","College teaches digital design, RTL, embedded systems, and PCB layout as separate subjects but not how the pieces connect. This talk covers the gap between working RTL and deployable hardware, addressing power delivery, clocking, reset, board integration, firmware bring-up, validation, and how open EDA and open silicon democratize hardware.","","AASHISH NIRANJAN BARATHYKANNAN","Aashish Niranjan Barathykannan is an Electronics and Communication Engineering student at SRM Institute of Science and Technology, Chennai. Interests include open silicon, digital design, embedded systems, and open hardware.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/34e5spk31b","The speaker learned digital design, RTL, embedded systems, PCB layout, and firmware as separate subjects in college. The core insight: none of those courses taught the part that matters most, how the pieces connect.
+
+The talk covers the gap between working RTL designs and deployable hardware systems, addressing power delivery, clocking, reset architecture, board integration, firmware bring-up, interface debugging, validation, and documentation. It also explores how open-source EDA tools and open silicon initiatives democratize hardware development for students and independent makers.
+
+## Key Takeaways
+- A working RTL design is a project's start, not completion
+- Understanding engineering layers between silicon and usable products
+- Common failure points in power, clocking, PCB integration, firmware, validation
+- How open-source hardware tools enable student-led development
+
+## About the Speaker
+Aashish Niranjan Barathykannan is an Electronics and Communication Engineering student at SRM Institute of Science and Technology, Chennai. Interests include open silicon, digital design, embedded systems, and open hardware.
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware
+- License: CC BY-SA 4.0","[{""title"":""The OpenROAD Project"",""url"":""https://theopenroadproject.org""},{""title"":""GitHub — OpenROAD"",""url"":""https://github.com/The-OpenROAD-Project/OpenROAD""},{""title"":""OSHWA"",""url"":""https://www.oshwa.org""},{""title"":""KiCad"",""url"":""https://www.kicad.org""}]"
+"Building an Open Maritime SAR Perception Stack on RK3588 Edge Hardware","SentinelBlue is an open-source maritime search-and-rescue perception system running on affordable RK3588 edge hardware. The talk covers dataset curation, YOLO benchmarking, and the full path from training to deployment: PyTorch to ONNX to RKNN compilation, INT8 quantization trade-offs, and lessons on which assumptions break outside desktop GPUs.","","Rupankar Majumdar","Rupankar Majumdar is a Computer Science Engineering student specializing in AI/ML at Vellore Institute of Technology, Chennai, with industry experience at Garuda Aerospace and Centurion Mobility.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/3aejg3k2mr","Modern AI models achieve impressive results in research environments, but deployment on real hardware often causes projects to fail. SentinelBlue is an open-source project exploring practical computer vision on affordable edge hardware using open-source tools.
+
+This talk traces building an open maritime search-and-rescue perception system, discussing dataset curation, YOLO architecture benchmarking, and the path from training to deployment: exporting from PyTorch to ONNX, navigating RKNN compilation, dealing with quantization trade-offs, and targeting RK3588-based hardware including Radxa ROCK 5C.
+
+## Key Takeaways
+- Why computer vision projects fail post-training and how to bridge the GPU-to-drone gap
+- Practical roadmap for edge AI: dataset creation, training, ONNX export, RKNN compilation, INT8 quantization
+- Hardware selection for edge AI (Raspberry Pi, Jetson, RK3588-class)
+- The PyTorch to ONNX to RKNN deployment pipeline
+
+## About the Speaker
+Rupankar Majumdar is a Computer Science Engineering student specializing in AI/ML at Vellore Institute of Technology, Chennai, with industry experience at Garuda Aerospace and Centurion Mobility.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: GNU GPL v3","[{""title"":""GitHub — SentinelBlue"",""url"":""https://github.com/InvictusRex/SentinelBlue""},{""title"":""Radxa ROCK 5C"",""url"":""https://radxa.com/products/rock5/5c/""},{""title"":""ONNX"",""url"":""https://onnx.ai/""}]"
+"Building at the Edge: Combining Open Hardware and ML in Student Projects","Most ML conversations assume a server or cloud; this talk challenges that. The speaker describes building MITRA (an autonomous rover) and an adaptive wearable health monitor using Raspberry Pi and ESP32, covering microcontroller selection, firmware in C/MicroPython, sensor pipelines, and lightweight ML in constrained environments using open tools.","","Saurabh Patil","Saurabh Patil is a final-year Electronics and Communication Engineering student at VIT-AP University, Amaravati, integrating embedded systems, signal processing, and applied ML on constrained hardware.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/7tvhv9quak","Most conversations about machine learning assume a server, a cloud API, or at least a decent laptop. This talk challenges that assumption. The speaker describes building MITRA, an autonomous rover, and an adaptive wearable health monitoring system using Raspberry Pi and ESP32 microcontrollers.
+
+The presentation covers microcontroller selection, firmware development in C and MicroPython, sensor pipeline design, and deploying lightweight ML models in constrained environments, using open-source tools like KiCad, ESP-IDF, and FreeRTOS.
+
+## Key Takeaways
+- ML operates effectively on microcontrollers without cloud infrastructure
+- Hardware selection (ESP32 vs Raspberry Pi vs STM32) impacts outcomes
+- Open tooling suffices for complete hardware projects
+- Sensor pipeline reliability is harder than model complexity
+
+## About the Speaker
+Saurabh Patil is a final-year Electronics and Communication Engineering student at VIT-AP University, Amaravati, integrating embedded systems, signal processing, and applied ML on constrained hardware.
+
+## Details
+- Format: Lightning Talk (Beginner, First Talk)
+- Track: Open Hardware","[{""title"":""GitHub — MITRA"",""url"":""https://github.com/SaurxbhPatil21/Mitra-""},{""title"":""GitHub — Health monitoring"",""url"":""https://github.com/SaurxbhPatil21/Health-monitoring-system""},{""title"":""Portfolio"",""url"":""https://saurxbhpatil.netlify.app/""}]"
+"Build your own open source keyboard with ZMK/QMK","Your keyboard is the tool you touch more than any other computer hardware. This talk explores custom keyboard design using ZMK/QMK firmware, from gaming macros to ergonomic split keyboards, showing how to build open-source keyboards without third-party software across the full stack from matrix scanning to Bluetooth HID.","","Advait Dhamorikar","Advait Dhamorikar, Linux Software Engineer at Mecha Systems, is a Linux hacker, embedded tinkerer, and occasional keyboard builder/breaker.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/32f9jjkob0","Your keyboard is the tool you touch more than any other computer hardware. This talk explores custom keyboard design using ZMK/QMK firmware, covering applications from gaming macros to ergonomic split keyboards, and demonstrates how to build open-source keyboards without third-party software, examining the complete stack from matrix scanning through Bluetooth HID protocols.
+
+## Key Takeaways
+- Understanding modern keyboard operation (matrix scanning to USB/Bluetooth HID)
+- Custom keyboard design workflow (schematic, PCB design, firmware)
+- Implementing layers, combos, macros, and custom behaviors
+
+## About the Speaker
+Advait Dhamorikar, Linux Software Engineer at Mecha Systems, is a Linux hacker, embedded tinkerer, and occasional keyboard builder/breaker.
+
+## Details
+- Format: Talk (Beginner, First Talk)
+- Track: Open Hardware","[{""title"":""ZMK docs"",""url"":""https://zmk.dev/docs""},{""title"":""GitHub — Corne (crkbd)"",""url"":""https://github.com/foostan/crkbd""},{""title"":""QMK docs"",""url"":""https://docs.qmk.fm/""}]"
+"JASPER: Open-Source Spectroscopy for Everyday Science","JASPER (Just Another Spectrometer? Not Quite) is an open-source hardware spectrometer built on Right to Repair principles, using a blazed reflective grating and a line-array CMOS sensor. Applications include dairy quality control, environmental monitoring, and chemometric modeling, serving as a stepping stone toward open Raman and FTIR instruments.","","Tony Francis","Tony Francis, Co-founder & CEO, CheckAg Pvt Ltd. Industry veteran with 25+ years in product engineering at Bosch, Intel, and Texas Instruments, with 7 patent applications in sensors and IoT.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/2spauuo7vo","Analytical tools must escape elite laboratories and reach everyday citizens. This talk introduces JASPER (Just Another Spectrometer? Not Quite), an open-source hardware platform built on Right to Repair principles.
+
+The system uses a blazed reflective grating to split light into component wavelengths and a line-array CMOS sensor to capture diffracted light and produce digital spectra. Both driver hardware and optical design are open-source licensed. Key applications include dairy quality control, environmental monitoring, and chemometric modeling using Python libraries like Scikit-Learn. The project serves as a stepping stone toward open-source Raman and FTIR instruments.
+
+## Key Takeaways
+Contributions welcome across firmware optimizations, drivers, and field use cases to ensure JASPER reaches students, researchers, and grassroots communities.
+
+## About the Speaker
+Tony Francis, Co-founder & CEO, CheckAg Pvt Ltd. Industry veteran with 25+ years in product engineering at Bosch, Intel, and Texas Instruments, with 7 patent applications in sensors and IoT.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: Documentation & Data: CC BY-SA 4.0","[{""title"":""Hackaday — JASPER"",""url"":""https://hackaday.io/project/202421-jasper-vis-nir-spectrometer""},{""title"":""Spectrometer simulator"",""url"":""https://checkag-spectrometer-simulator-user-input-wzrswt.streamlit.app/""}]"
+"Open Hardware for Climate Resilience: From Rain Gauges to Flood Early Warning","Kerala's 2018-2021 floods exposed critical gaps in weather monitoring, with only 68 functional rain gauges against a need for 256. ICFOSS addressed this with open-source hardware and software: automated rain gauges and weather stations with LoRaWAN, water-level sensors, community gateways, open dashboards, and alert systems.","","Dr. Sunil Thomas Thonikuzhiyil","Dr. Sunil Thomas Thonikuzhiyil, Director, ICFOSS. Electronics Engineering PhD (IIT Bombay) with a law degree. Amateur radio operator (VU2SWX).","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/fpca2l832k","Kerala's 2018, 2019, and 2021 floods exposed critical gaps in weather monitoring infrastructure. The state had only 68 functional manual rain gauges despite needing 256 stations. ICFOSS has addressed this through open-source hardware and software solutions.
+
+The presentation covers automated rain gauge stations with LoRaWAN and open PCB designs; automatic weather stations; river and pond water-level sensors with configurable alert thresholds; community-deployable LoRaWAN gateways; real-time open dashboards and SMS/app alerts; field maintenance lessons; and sustainability strategies for open civic infrastructure.
+
+## Key Takeaways
+- Replicable architecture for community environmental monitoring using open tools
+- Practical LoRaWAN deployment in Indian field conditions
+- Access to open hardware and software repositories
+- Lessons on sustaining open civic tech beyond pilot phases
+
+## About the Speaker
+Dr. Sunil Thomas Thonikuzhiyil, Director, ICFOSS. Electronics Engineering PhD (IIT Bombay) with a law degree. Amateur radio operator (VU2SWX).
+
+## Details
+- Format: Talk (Intermediate, First Talk)
+- Track: Open Hardware","[{""title"":""ICFOSS demo (YouTube)"",""url"":""https://youtu.be/YLm6_L4di8E""},{""title"":""ICFOSS demo (YouTube)"",""url"":""https://www.youtube.com/watch?v=ei8-_nG1XXg""}]"
+"IoT enabling Smart Panchayats: A Control, Communication, and Computing Ecosystem for Sustainable Development Goals","Local self-governments need reliable field-level data for water management, agriculture, and environmental monitoring. This talk describes an ICFOSS IoT initiative in Kerala integrating sensor-based monitoring across water, agriculture, microclimate, and air quality using LoRaWAN and open-source tools to support Panchayat governance and the SDGs.","","Gopika TG","Gopika TG is a Senior Research Fellow at ICFOSS supporting IoT systems, open hardware, environmental monitoring, and field deployments. Co-speaker Shafeek P M is Manager of Projects at ICFOSS Kerala.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/9m743l8njq","Local self-governments need reliable field-level data to improve water management, agriculture, environmental monitoring, and public service delivery. This proposal describes an IoT initiative in Kerala integrating sensor-based monitoring across water, agriculture, microclimate, and air quality sectors using LoRaWAN and open-source tools.
+
+## Key Takeaways
+How IoT supports Panchayat governance, how FOSS/open hardware enable public infrastructure, integration of environmental monitoring systems, sensor-to-dashboard architecture, real-world deployment challenges, and replication potential.
+
+## About the Speaker
+Gopika TG is a Senior Research Fellow at ICFOSS supporting IoT systems, open hardware, environmental monitoring, and field deployments. Co-speaker Shafeek P M is Manager of Projects at ICFOSS Kerala.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: CC-BY-SA","[{""title"":""Smart Panchayats (YouTube)"",""url"":""https://www.youtube.com/watch?v=pGzpEUUABg0""}]"
+"Building a tiny FPGA accelerator with FOSS tooling","A walkthrough of the current FOSS ecosystem around FPGA development, used to build an 8x8 int8 systolic array for GEMM acceleration. The project uses Amaranth for HDL, LiteX for SoC IPs, and oss-cad-suite for synthesis, place-and-route, and bitstream flashing, showing hobbyist FPGA work no longer needs proprietary vendor tooling.","","Amandeep Singh","Amandeep Singh, Computer Scientist II at Adobe. ""At work I do Platform Engineering. Outside of work, I am a Maker and tinker with ML, GPUs and Compilers.""","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/anm4n8lt1p","In this talk the speaker goes over the current FOSS ecosystem around FPGA development and what they used to build an 8x8 int8 systolic array for GEMM acceleration.
+
+The project employed Amaranth for HDL, LiteX for pre-baked SoC IPs, and the oss-cad-suite project for synthesis, place-and-route, and bitstream flashing, demonstrating that hobbyist-scale FPGA development no longer requires exclusively proprietary vendor tooling, while examining current tool limitations.
+
+## Key Takeaways
+- What the current FOSS FPGA tooling stack looks like
+- How Amaranth, LiteX, Yosys, nextPNR and openFPGAloader fit together
+- What parts of building were pleasant today
+- Rough edges around board support and vendor-specific features
+
+## About the Speaker
+Amandeep Singh, Computer Scientist II at Adobe. ""At work I do Platform Engineering. Outside of work, I am a Maker and tinker with ML, GPUs and Compilers.""
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: Presentation CC BY-SA 4.0, Code MIT","[{""title"":""GitHub — loom"",""url"":""https://github.com/amandeepsp/loom""}]"
+"Nia: My First Badge","Nia is a badge that pushes the RP2354 to its limits, inspired by mitxela's pendant, featuring fluid simulation and a few mini games. The speaker shares development experiences covering the RP2354 microcontroller, supply chain management, prototyping to production, design tools, and troubleshooting.","","Sayyad Abid","Sayyad Abid, Firmware Engineer at Clean Electric. Personal tagline: ""My kernel pops instead of breaking.""","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/8sduqa7pg1","Nia is a badge that pushes the RP2354 to its limits. The project is inspired by mitxela's pendant. This version features fluid simulation and a few mini games. The speaker discusses development experiences covering the RP2354 microcontroller, supply chain management, prototyping to production transition, design tools, and troubleshooting resources.
+
+## Key Takeaways
+- Using KiCAD for PCB design with free 3D rendering
+- Supply chain approach and preparation strategies
+- Prototyping through production realization
+- Helpful tools for the development process
+- Navigating hardware and software obstacles
+
+## About the Speaker
+Sayyad Abid, Firmware Engineer at Clean Electric. Personal tagline: ""My kernel pops instead of breaking.""
+
+## Details
+- Format: Lightning Talk (Beginner, First Talk)
+- Track: Open Hardware","[{""title"":""GitHub — nia_flip"",""url"":""https://github.com/abid-sayyad/nia_flip""}]"
+"Bye bye datasheets, Hello HardwareLib","This talk proposes replacing traditional datasheets with simulation-ready physics models. The speaker describes a comprehensive component library built with Julia and Dyad supporting electrical, thermal, fluid, mechanical, and hydraulic components, explaining the advantages of acausal over causal modeling with real-world maker examples.","","Nilesh Trivedi","Nilesh Trivedi, Co-founder and CTO, has 20+ years in tech. He's a startup CTO in AI and creator of Fixable wiki, SWE-WebDevBench, SwadeshiAlternative, and other FOSS projects.","","Lightning Talk","https://fossunited.org/c/indiafoss/2026/cfp/e6lrp8uufr","This talk proposes replacing traditional datasheets with simulation-ready physics models. The speaker describes creating a comprehensive component library using Julia and Dyad that supports electrical, thermal, fluid, mechanical, and hydraulic components, explaining the advantages of acausal over causal modeling and showcasing real-world applications by hardware makers.
+
+## Key Takeaways
+- Introduction to Dyad components for simulation and optimization of hardware designs
+- Modeling multiple domains (physical, thermal, electrical, economical) in the same component
+- Process walkthrough and showcase examples
+- Limitations and next steps
+
+## About the Speaker
+Nilesh Trivedi, Co-founder and CTO, has 20+ years in tech. He's a startup CTO in AI and creator of Fixable wiki, SWE-WebDevBench, SwadeshiAlternative, and other FOSS projects.
+
+## Details
+- Format: Lightning Talk (Beginner)
+- Track: Open Hardware
+- License: MIT","[{""title"":""JuliaHub — Dyad"",""url"":""https://juliahub.com/products/dyad""},{""title"":""Dyad — creating components"",""url"":""https://help.juliahub.com/dyad/stable/tutorials/creating-components.html""}]"
+"Lessons Learned from a hardware prototype/weekend project that tried to turn into a product","Sidekick is an open hardware emotional desk toy that evolved from a weekend project into an attempted commercial product. Starting as a display toy with accelerometer, it grew to include a MicroPython live-coding system. The talk traces the journey and the scope creep, technical debt, and solo-dev pressure that came with it.","","Souhrud Reddy","Souhrud Reddy, Ex-Student, PkgForge. Bio: ""If in doubt, just sudo it and apologize later.""","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/0ak5gg234q","The speaker describes ""sidekick,"" an open hardware emotional desk toy that evolved from a weekend passion project into an attempted commercial product. Initially a display-based toy with accelerometer capabilities, it expanded to include a MicroPython programming system allowing live code execution on the device.
+
+The speaker details significant scope creep while attempting to increase perceived value, resulting in mounting technical debt and unsustainable pressure as a solo developer. The presentation traces the journey from domain registration through PCB development.
+
+## Key Takeaways
+- How hobby projects die from scope creep
+- Distinctions between software and hardware development challenges
+- Hardware is pretty easy with the right shortcuts, but carries significant risks
+- Open source hardware inspiration and motivation
+
+## About the Speaker
+Souhrud Reddy, Ex-Student, PkgForge. Bio: ""If in doubt, just sudo it and apologize later.""
+
+## Details
+- Format: Talk (Beginner)
+- Track: Open Hardware
+- License: CC BY-SA 4.0","[{""title"":""meetsidekick.tech"",""url"":""https://meetsidekick.tech""}]"
+"Entering into a world of FPGAs with 4$ fully open source shrike-lite and shrikeFi","FPGAs are rare in industry due to limited hardware and software ecosystems. With the fully open source shrike-lite ($4) and shrikeFi ($9) dev boards, this talk demonstrates what FPGAs are, what you can do with them, and what these tiny boards are capable of, plus a look at open-source FPGA toolchains like yosys.","","Akshar Vastarpara","Akshar Vastarpara, CEO/co-founder at Vicharak. Started with IoT-based solutions and turned Vicharak into a computing hardware company focused on edge computing.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/99oasc5s6d","FPGAs are very rare in industry. Due to limited availability of hardware and software ecosystems, FPGAs were always far from the community. With shrike-lite and shrikeFi, fully open source hardware costing only $4 and $9 respectively, the speaker demonstrates what FPGAs are, what you can do with them, and what these tiny dev boards are capable of. The talk also covers open-source FPGA toolchains like yosys.
+
+## Key Takeaways
+- FPGAs: what are they?
+- How you program FPGAs right now
+- What you can do with the $4 shrike-lite (featuring RP2040 and ESP32-S3)
+- Open source FPGA toolchains
+
+## About the Speaker
+Akshar Vastarpara, CEO/co-founder at Vicharak. Started with IoT-based solutions and turned Vicharak into a computing hardware company focused on edge computing.
+
+## Details
+- Format: Talk (Advanced)
+- Track: Open Hardware
+- License: Open Hardware License v1.2","[{""title"":""GitHub — shrike"",""url"":""https://github.com/vicharak-in/shrike""}]"
+"eSim: An Open Source EDA with a vision of Simulation to GDS II","eSim is an open-source EDA tool developed under the FOSSEE Project at IIT Bombay, enabling an accessible 'Simulation to GDS II' workflow with FOSS technologies. It covers schematic capture, SPICE simulation, PCB design, HDL workflows, and integration with OpenROAD for open-source ASIC implementation and chip design education.","","Sumanto Kar","Sumanto Kar is Assistant Project Manager at FOSSEE, IIT Bombay, with an M.Tech from IIT Bombay and a B.E. in Electronics from Mumbai University, focused on open-source EDA tools.","","Talk","https://fossunited.org/c/indiafoss/2026/cfp/13c5qf2b95","eSim is an open-source Electronic Design Automation (EDA) tool developed under the FOSSEE Project at IIT Bombay with a vision of enabling an accessible ""Simulation to GDS II"" workflow using free and open-source technologies. The presentation covers schematic capture, SPICE simulation, PCB design, and HDL-based workflows, plus integration with OpenROAD for open-source ASIC implementation, addressing end-to-end chip design education and research.
+
+## Key Takeaways
+- Role of open-source EDA in semiconductor design
+- eSim architecture and educational applications
+- Schematic capture, SPICE simulation, PCB design, HDL workflows
+- ""Simulation to GDS II"" vision overview
+- eSim and OpenROAD integration possibilities
+- Open-source ASIC design methodologies
+
+## About the Speaker
+Sumanto Kar is Assistant Project Manager at FOSSEE, IIT Bombay, with an M.Tech from IIT Bombay and a B.E. in Electronics from Mumbai University, focused on open-source EDA tools.
+
+## Details
+- Format: Talk (Intermediate)
+- Track: Open Hardware
+- License: GPL v3.0","[{""title"":""eSim — FOSSEE"",""url"":""https://esim.fossee.in""},{""title"":""GitHub — eSim"",""url"":""https://github.com/FOSSEE/eSim""},{""title"":""GitHub — NGHDL"",""url"":""https://github.com/FOSSEE/NGHDL""}]"

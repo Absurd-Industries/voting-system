@@ -25,14 +25,20 @@ auth.post('/sync', async (c) => {
   ).bind(clerkUserId).first<{ id: string }>()
   if (existingAdmin) return c.json({ ok: true, role: 'admin' })
 
-  // Fetch the user's email from Clerk (needed for both voter creation and admin check)
-  const clerk = createClerkClient({ secretKey: c.env.CLERK_SECRET_KEY })
-  const user = await clerk.users.getUser(clerkUserId)
-  const primaryEmail = getPrimaryEmail(user)
-  const email = primaryEmail?.emailAddress ?? ''
+  // Dev bypass: no Clerk to query, so use a fixed local email and skip verification.
+  let email: string
+  if (c.env.DEV_NO_AUTH === 'true') {
+    email = 'dev@localhost'
+  } else {
+    // Fetch the user's email from Clerk (needed for both voter creation and admin check)
+    const clerk = createClerkClient({ secretKey: c.env.CLERK_SECRET_KEY })
+    const user = await clerk.users.getUser(clerkUserId)
+    const primaryEmail = getPrimaryEmail(user)
+    email = primaryEmail?.emailAddress ?? ''
 
-  if (!email || !isVerifiedEmail(primaryEmail)) {
-    return c.json({ error: 'A verified email is required before this account can be synced.' }, 422)
+    if (!email || !isVerifiedEmail(primaryEmail)) {
+      return c.json({ error: 'A verified email is required before this account can be synced.' }, 422)
+    }
   }
 
   // Bootstrap access: the first synced user becomes the initial admin.

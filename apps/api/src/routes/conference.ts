@@ -25,6 +25,34 @@ conference.get('/conference', async (c) => {
   })
 })
 
+// Public archive of submitted talks - powers the landing page for anonymous
+// visitors. No auth, no vote counts, and presenter_email stays private.
+conference.get('/talks/archive', async (c) => {
+  const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured yet' }, 404)
+
+  const { results: talks } = await getTalksByConference(c.env.DB, conf.id)
+  // Scramble per request so no talk is disadvantaged by a fixed order -
+  // everyone browsing the archive gives every talk equal visibility.
+  const archive = [...talks]
+  for (let i = archive.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[archive[i], archive[j]] = [archive[j], archive[i]]
+  }
+
+  return c.json(archive.map(t => ({
+    id: t.id,
+    title: t.title,
+    description: t.description,
+    presenter_name: t.presenter_name,
+    presenter_bio: t.presenter_bio,
+    talk_type: t.talk_type,
+    cfp_url: t.cfp_url,
+    cfp_content: t.cfp_content,
+    references: t.references,
+  })))
+})
+
 function stableHash(value: string) {
   let hash = 2166136261
   for (let i = 0; i < value.length; i++) {
@@ -50,6 +78,10 @@ conference.get('/talks', requireAuth, async (c) => {
     description: t.description,
     presenter_name: t.presenter_name,
     presenter_bio: t.presenter_bio,
+    talk_type: t.talk_type,
+    cfp_url: t.cfp_url,
+    cfp_content: t.cfp_content,
+    references: t.references,
   })))
   // Note: presenter_email is intentionally excluded from the public response
 })

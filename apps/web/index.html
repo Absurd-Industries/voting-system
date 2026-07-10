@@ -2,10 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/images/foss-united.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CFP Vote</title>
+    <title>Open Hardware Devroom — IndiaFOSS 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
   </head>
   <body>
+    <!-- Torn-edge SVG filters (Ooru ids: referenced by .card-bg / .hero-bg in index.css) -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="torn">
+        <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="5" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="papercut">
+        <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="papercut-2">
+        <feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="4" seed="3" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="papercut-3">
+        <feTurbulence type="turbulence" baseFrequency="0.045" numOctaves="4" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

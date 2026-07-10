@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '../lib/api.js'
 import { formatDateTime, formatDuration } from '../lib/time.js'
+import TalkDetailModal, { type TalkDetail } from '../components/TalkDetailModal.js'
 
 interface Conference {
   id: string
@@ -14,13 +15,7 @@ interface Conference {
   server_now: number
 }
 
-interface Talk {
-  id: string
-  title: string
-  description: string | null
-  presenter_name: string
-  presenter_bio: string | null
-}
+type Talk = TalkDetail
 
 interface VotesResponse {
   votes: string[]
@@ -29,18 +24,18 @@ interface VotesResponse {
 
 function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(Date.now())
-
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), intervalMs)
     return () => window.clearInterval(timer)
   }, [intervalMs])
-
   return now
 }
 
 export default function VotePage() {
   const qc = useQueryClient()
   const now = useNow()
+  const [detailTalk, setDetailTalk] = useState<Talk | null>(null)
+  const [filter, setFilter] = useState<string>('All')
 
   const { data: conference, isLoading: confLoading } = useQuery({
     queryKey: ['conference'],
@@ -63,29 +58,34 @@ export default function VotePage() {
   const votesUsed = votedIds.size
   const votesTotal = conference?.votes_per_voter ?? myVotes?.votes_per_voter ?? 0
   const isAdminPreview = myVotes?.votes_per_voter === 0 && votesTotal > 0
-  const clientServerOffset = useMemo(() => (
-    conference ? conference.server_now - Date.now() : 0
-  ), [conference?.server_now])
+  const clientServerOffset = useMemo(
+    () => (conference ? conference.server_now - Date.now() : 0),
+    [conference?.server_now],
+  )
   const effectiveNow = now + clientServerOffset
 
   const castVote = useMutation({
-    mutationFn: (talkId: string) =>
-      apiFetch(`/api/votes/${talkId}`, { method: 'POST' }),
+    mutationFn: (talkId: string) => apiFetch(`/api/votes/${talkId}`, { method: 'POST' }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['my-votes'] }),
+  })
+  const retractVote = useMutation({
+    mutationFn: (talkId: string) => apiFetch(`/api/votes/${talkId}`, { method: 'DELETE' }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['my-votes'] }),
   })
 
-  const retractVote = useMutation({
-    mutationFn: (talkId: string) =>
-      apiFetch(`/api/votes/${talkId}`, { method: 'DELETE' }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['my-votes'] }),
-  })
+  const talkTypes = useMemo(() => {
+    const set = new Set<string>()
+    talks.forEach((t) => t.talk_type && set.add(t.talk_type))
+    return ['All', ...Array.from(set)]
+  }, [talks])
+
+  const visibleTalks = filter === 'All' ? talks : talks.filter((t) => t.talk_type === filter)
 
   if (confLoading || talksLoading) {
-    return <div className="text-gray-500">Loading...</div>
+    return <div className="py-16 text-center text-sm text-ink-faint">Loading…</div>
   }
-
   if (!conference) {
-    return <div className="text-gray-500">No conference configured yet.</div>
+    return <div className="py-16 text-center text-sm text-ink-faint">No conference configured yet.</div>
   }
 
   const isOpen = conference.voting_status === 'open'
@@ -97,41 +97,51 @@ export default function VotePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-start sm:justify-between">
+      {/* Header */}
+      <div className="kp-card flex flex-col gap-5 p-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Current conference</p>
-          <h1 className="text-2xl font-bold text-slate-950">{conference.name}</h1>
+          <p className="supertitle mb-1">Current conference</p>
+          <h1 className="page-title">{conference.name}</h1>
           {conference.description && (
-            <p className="mt-2 text-sm leading-6 text-slate-600">{conference.description}</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-light">{conference.description}</p>
           )}
         </div>
-        <div className="rounded-lg bg-slate-950 px-4 py-3 text-white sm:min-w-44">
-          <p className="text-xs font-medium text-slate-300">{showCountdown ? countdownLabel : isOpen ? 'Voting status' : 'Voting closed'}</p>
-          <p className="mt-1 text-xl font-semibold tabular-nums">
+        <div className="card-ink shrink-0 px-5 py-4 sm:min-w-[11rem]">
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-paper/70">
+            <i className="ph-bold ph-clock" aria-hidden="true" />
+            {showCountdown ? countdownLabel : isOpen ? 'Voting status' : 'Voting closed'}
+          </p>
+          <p className="mt-1 font-serif text-2xl font-bold tabular-nums">
             {showCountdown ? formatDuration(countdownTarget! - effectiveNow) : isOpen ? 'Open' : 'Closed'}
           </p>
         </div>
       </div>
 
+      {/* Status */}
       {isOpen ? (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+        <div className="status-open">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <span className="font-medium">Voting is open</span>
+            <span className="flex items-center gap-1.5 font-semibold">
+              <i className="ph-bold ph-check-circle" aria-hidden="true" /> Voting is open
+            </span>
             <span>{isAdminPreview ? `${votesTotal} votes per voter` : `${votesUsed} of ${votesTotal} votes used`}</span>
           </div>
-          {votingClosesAt && <p className="mt-1 text-emerald-800">Closes {votingClosesAt}</p>}
-          {isAdminPreview && <p className="mt-1 text-emerald-800">Admin preview: admins cannot cast votes.</p>}
+          {votingClosesAt && <p className="mt-1 text-funded/80">Closes {votingClosesAt}</p>}
+          {isAdminPreview && <p className="mt-1 text-funded/80">Admin preview: admins cannot cast votes.</p>}
         </div>
       ) : (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          <span className="font-medium">Voting is currently closed.</span>
+        <div className="status-warn">
+          <span className="flex items-center gap-1.5 font-semibold">
+            <i className="ph-bold ph-lock-simple" aria-hidden="true" /> Voting is currently closed.
+          </span>
           {votingOpensAt && <span> Opens {votingOpensAt}.</span>}
         </div>
       )}
 
-      <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
-        <p className="font-semibold text-slate-950">Voting rules</p>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      {/* Rules */}
+      <div className="kp-card p-5 text-sm text-ink-light">
+        <p className="section-title mb-2">How voting works</p>
+        <div className="grid gap-2 sm:grid-cols-2">
           <p>Pick up to {votesTotal} talks you want to see. You do not need to use every vote.</p>
           <p>You can change your selections until voting closes.</p>
           <p>Talk order is randomized per voter to reduce position bias.</p>
@@ -139,49 +149,95 @@ export default function VotePage() {
         </div>
       </div>
 
-      {talks.length === 0 && (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-          No talks submitted yet.
+      {/* Filter pills */}
+      {talkTypes.length > 2 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {talkTypes.map((t) => {
+            const active = filter === t
+            return (
+              <button
+                key={t}
+                onClick={() => setFilter(t)}
+                className={[
+                  'rounded-full border px-3.5 py-1.5 font-sans text-xs font-semibold transition-colors',
+                  active
+                    ? 'border-ink bg-ink text-paper'
+                    : 'border-ink/20 text-ink-faint hover:border-ink hover:text-ink',
+                ].join(' ')}
+              >
+                {t}
+                {t !== 'All' && (
+                  <span className="ml-1.5 opacity-60">{talks.filter((x) => x.talk_type === t).length}</span>
+                )}
+              </button>
+            )
+          })}
         </div>
       )}
 
-      <div className="space-y-4">
-        {talks.map(talk => {
-          const voted = votedIds.has(talk.id)
-          const canVote = isOpen && (!voted ? votesUsed < votesTotal : true)
-
-          return (
-            <div key={talk.id} className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-start">
-              <div className="flex-1">
-                <div className="mb-1">
-                  <h2 className="font-semibold text-slate-950">{talk.title}</h2>
-                </div>
-                <p className="text-sm text-slate-500 mb-1">{talk.presenter_name}</p>
-                {talk.description && (
-                  <p className="text-sm leading-6 text-slate-700">{talk.description}</p>
-                )}
-              </div>
-              <button
-                disabled={!canVote || castVote.isPending || retractVote.isPending}
-                onClick={() => voted
-                  ? retractVote.mutate(talk.id)
-                  : castVote.mutate(talk.id)
-                }
-                className={[
-                  'min-h-11 rounded-md px-4 py-2 text-sm font-medium transition-colors sm:shrink-0',
-                  voted
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : canVote
-                      ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      : 'bg-slate-50 text-slate-400 cursor-not-allowed',
-                ].join(' ')}
+      {visibleTalks.length === 0 ? (
+        <div className="empty-state">
+          <i className="ph-bold ph-cardboard-box text-3xl opacity-50" aria-hidden="true" />
+          <p className="font-serif text-lg font-bold text-ink">No talks here yet</p>
+          <p className="text-sm">Check back soon.</p>
+        </div>
+      ) : (
+        <div className="card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleTalks.map((talk, i) => {
+            const voted = votedIds.has(talk.id)
+            const canVote = isOpen && (!voted ? votesUsed < votesTotal : true)
+            return (
+              <div
+                key={talk.id}
+                className="kp-card card-hover animate-fade-in-up flex flex-col p-5"
+                style={{ animationDelay: `${Math.min(i, 12) * 0.04}s` }}
               >
-                {voted ? 'Voted' : 'Vote'}
-              </button>
-            </div>
-          )
-        })}
-      </div>
+                <div className="mb-2 flex items-center gap-2">
+                  {talk.talk_type && <span className="tag tag-muted">{talk.talk_type}</span>}
+                  {voted && (
+                    <span className="flex items-center gap-1 text-xs font-bold text-stamp">
+                      <i className="ph-fill ph-check-circle" aria-hidden="true" /> Voted
+                    </span>
+                  )}
+                </div>
+                <h2 className="font-serif text-lg font-bold leading-snug text-ink">{talk.title}</h2>
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-faint">
+                  <i className="ph-bold ph-user" aria-hidden="true" /> {talk.presenter_name}
+                </p>
+                {talk.description && (
+                  <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-ink-light">
+                    {talk.description}
+                  </p>
+                )}
+                <div className="mt-4 flex gap-2">
+                  <button onClick={() => setDetailTalk(talk)} className="btn btn-outline btn-sm flex-1">
+                    <i className="ph-bold ph-info" aria-hidden="true" /> Details
+                  </button>
+                  <button
+                    disabled={!canVote || castVote.isPending || retractVote.isPending}
+                    onClick={() => {
+                      voted ? retractVote.mutate(talk.id) : castVote.mutate(talk.id)
+                    }}
+                    className={['btn btn-sm flex-1', voted ? 'btn-stamp animate-vote-pulse' : 'btn-primary'].join(' ')}
+                  >
+                    {voted ? (
+                      <>
+                        <i className="ph-fill ph-check" aria-hidden="true" /> Voted
+                      </>
+                    ) : (
+                      <>
+                        <i className="ph-bold ph-hand-pointing" aria-hidden="true" /> Vote
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {detailTalk && <TalkDetailModal talk={detailTalk} onClose={() => setDetailTalk(null)} />}
     </div>
   )
 }

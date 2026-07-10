@@ -26,6 +26,10 @@ export interface Talk {
   presenter_name: string
   presenter_bio: string | null
   presenter_email: string | null
+  talk_type: string | null
+  cfp_url: string | null
+  cfp_content: string | null
+  references: string | null
   created_at: number
 }
 

@@ -18,6 +18,7 @@ export type Bindings = {
   CLERK_PUBLISHABLE_KEY: string
   ALLOWED_ORIGIN: string
   ADMIN_EMAIL: string
+  DEV_NO_AUTH: string
 }
 
 export type Variables = {

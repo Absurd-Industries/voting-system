@@ -277,6 +277,10 @@ If updating an older local or production database, add these columns/tables:
 ```sql
 ALTER TABLE conferences ADD COLUMN results_public INTEGER NOT NULL DEFAULT 0;
 
+ALTER TABLE talks ADD COLUMN talk_type   TEXT;
+ALTER TABLE talks ADD COLUMN cfp_url     TEXT;
+ALTER TABLE talks ADD COLUMN cfp_content TEXT;
+
 CREATE TABLE IF NOT EXISTS audit_logs (
   id             TEXT PRIMARY KEY,
   admin_user_id  TEXT NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,

@@ -1,3 +1,357 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =========================================================================
+   Ooru-parity design system. Orange (#FF5900 / stamp) is used ONLY for
+   interaction: CTAs, :hover / :focus / :active, active nav, toggled-on.
+   ========================================================================= */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply text-ink font-sans;
+    background-color: #d4b896;
+    background-image: url('/images/kraft-paper.jpg');
+    background-repeat: repeat;
+    background-size: auto; /* seamless 539x360 tile — do NOT use cover */
+    font-weight: 450;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif;
+  }
+  *:focus-visible {
+    outline: 2px solid #ff5900;
+    outline-offset: 2px;
+  }
+  ::selection {
+    background-color: #ff5900;
+    color: #faf3e8;
+  }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-track { background: #e8d5b7; }
+  ::-webkit-scrollbar-thumb { background: #b8956a; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #ff5900; }
+}
+
+@layer components {
+  /* ---- Paper-cut cards -------------------------------------------------- */
+  /* Torn cream background is drawn by ::before so any markup works as-is. */
+  .card,
+  .kp-card {
+    @apply relative;
+    isolation: isolate;
+    border-radius: 0.875rem;
+  }
+  .card::before,
+  .kp-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(250, 243, 232, 0.72);
+    border-radius: 0.875rem;
+    filter: url(#papercut) drop-shadow(0 2px 3px rgba(26, 26, 26, 0.08));
+    z-index: -1;
+  }
+  /* Alternate torn seeds within a grid so adjacent cards differ */
+  .card-grid > *:nth-child(3n + 2) .kp-card::before,
+  .card-grid > .kp-card:nth-child(3n + 2)::before {
+    filter: url(#papercut-2) drop-shadow(0 2px 3px rgba(26, 26, 26, 0.08));
+  }
+  .card-grid > *:nth-child(3n + 3) .kp-card::before,
+  .card-grid > .kp-card:nth-child(3n + 3)::before {
+    filter: url(#papercut-3) drop-shadow(0 2px 3px rgba(26, 26, 26, 0.08));
+  }
+  .card-hover {
+    transition: transform 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+  }
+  /* Solid ink card (footers / countdown blocks) */
+  .card-ink {
+    @apply relative text-paper;
+    isolation: isolate;
+    border-radius: 0.875rem;
+  }
+  .card-ink::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #1a1a1a;
+    border-radius: 0.875rem;
+    filter: url(#papercut);
+    z-index: -1;
+  }
+
+  /* ---- Buttons --------------------------------------------------------- */
+  /* Alias names (.btn-ink/.btn-label) are self-contained: they get the base
+     too, so `class="btn-ink"` works without also needing `btn`. */
+  .btn,
+  .btn-primary,
+  .btn-ink,
+  .btn-stamp,
+  .btn-outline,
+  .btn-label,
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 font-sans font-semibold;
+    padding: 0.7rem 1.6rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.01em;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn:hover,
+  .btn-primary:hover,
+  .btn-ink:hover,
+  .btn-stamp:hover,
+  .btn-outline:hover,
+  .btn-label:hover,
+  .btn-ghost:hover {
+    transform: translateY(-1px);
+  }
+  .btn:disabled,
+  .btn-primary:disabled,
+  .btn-ink:disabled,
+  .btn-stamp:disabled,
+  .btn-outline:disabled,
+  .btn-label:disabled,
+  .btn-ghost:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-primary, .btn-ink {
+    background: #1a1a1a;
+    color: #faf3e8;
+  }
+  .btn-primary:hover, .btn-ink:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+
+  .btn-stamp {
+    background: #ff5900;
+    color: #faf3e8;
+  }
+  .btn-stamp:hover { box-shadow: 0 4px 12px rgba(255, 89, 0, 0.28); }
+
+  .btn-outline, .btn-label {
+    background: transparent;
+    color: #1a1a1a;
+    border: 1.5px solid #1a1a1a;
+  }
+  .btn-outline:hover, .btn-label:hover { background: #1a1a1a; color: #faf3e8; }
+
+  .btn-ghost {
+    background: transparent;
+    color: #1a1a1a;
+    padding: 0.5rem 1rem;
+  }
+  .btn-ghost:hover { background: rgba(26, 26, 26, 0.06); }
+
+  .btn-sm { padding: 0.5rem 1.15rem; font-size: 0.8rem; }
+
+  /* ---- Tags / pills ---------------------------------------------------- */
+  .tag {
+    @apply inline-flex items-center font-sans font-semibold uppercase;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+  .tag-default { background: rgba(26, 26, 26, 0.08); color: #1a1a1a; }
+  .tag-stamp   { background: rgba(255, 89, 0, 0.12); color: #ff5900; }
+  .tag-funded  { background: rgba(42, 95, 65, 0.12); color: #2a5f41; }
+  .tag-muted   { background: rgba(74, 61, 47, 0.10); color: #4a3d2f; }
+  .tag-danger  { background: rgba(220, 38, 38, 0.12); color: #dc2626; }
+
+  /* ---- Forms ----------------------------------------------------------- */
+  .kp-input {
+    @apply w-full font-sans text-ink;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.875rem;
+    border-radius: 0.625rem;
+    border: 1.5px solid rgba(26, 26, 26, 0.14);
+    background: rgba(250, 243, 232, 0.55);
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .kp-input::placeholder { color: #b8956a; }
+  .kp-input:focus {
+    outline: none;
+    border-color: #ff5900;
+    background: #faf3e8;
+    box-shadow: 0 0 0 3px rgba(255, 89, 0, 0.10);
+  }
+  .kp-label {
+    @apply mb-1 block font-sans font-semibold uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: #4a3d2f;
+  }
+
+  /* ---- Typographic helpers -------------------------------------------- */
+  .supertitle {
+    @apply font-sans font-bold uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: #4a3d2f;
+  }
+  .page-title {
+    @apply font-serif font-bold text-ink;
+    font-size: 1.875rem;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .section-title {
+    @apply font-serif font-bold text-ink;
+    font-size: 1.25rem;
+  }
+
+  /* ---- Status blocks (NOT orange — orange is interaction-only) --------- */
+  .status-open {
+    @apply text-sm text-funded;
+    padding: 0.85rem 1rem;
+    border-radius: 0.625rem;
+    border: 1.5px solid rgba(42, 95, 65, 0.35);
+    background: rgba(42, 95, 65, 0.08);
+  }
+  .status-warn {
+    @apply text-sm text-ink;
+    padding: 0.85rem 1rem;
+    border-radius: 0.625rem;
+    border: 1.5px solid rgba(26, 26, 26, 0.15);
+    background: rgba(232, 213, 183, 0.5);
+  }
+  .status-error {
+    @apply text-sm;
+    color: #b91c1c;
+    padding: 0.7rem 0.9rem;
+    border-radius: 0.625rem;
+    border: 1.5px solid rgba(220, 38, 38, 0.3);
+    background: rgba(220, 38, 38, 0.07);
+  }
+
+  /* ---- Tables ---------------------------------------------------------- */
+  .data-table {
+    @apply w-full text-sm;
+    border-collapse: collapse;
+  }
+  .data-table thead tr { border-bottom: 1.5px solid rgba(26, 26, 26, 0.18); }
+  .data-table th {
+    @apply px-4 py-2 text-left font-sans font-bold uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: #4a3d2f;
+  }
+  .data-table td { @apply px-4 py-3; border-bottom: 1px solid rgba(26, 26, 26, 0.07); }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr { transition: background 0.12s; }
+  .data-table tbody tr:hover { background: rgba(26, 26, 26, 0.03); }
+
+  /* ---- Progress -------------------------------------------------------- */
+  .progress { height: 6px; background: #e8d5b7; border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 999px; background: #2a5f41; transition: width 0.6s ease; }
+  .progress-fill.hot { background: #ff5900; }
+
+  /* ---- Misc ------------------------------------------------------------ */
+  .empty-state {
+    @apply flex flex-col items-center gap-2 text-center;
+    padding: 3rem 2rem;
+    border-radius: 0.875rem;
+    border: 1.5px dashed rgba(26, 26, 26, 0.2);
+    color: #4a3d2f;
+  }
+  .nav-link {
+    @apply font-sans font-semibold;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    color: #1a1a1a;
+    transition: color 0.15s, background 0.15s;
+  }
+  .nav-link:hover { color: #ff5900; }
+  .nav-link-active { color: #ff5900; background: rgba(250, 243, 232, 0.7); }
+
+  /* Decorative label — muted, never orange */
+  .stamp-label {
+    @apply inline-flex items-center gap-2 font-sans font-bold uppercase;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    border-radius: 999px;
+    background: rgba(74, 61, 47, 0.10);
+    color: #4a3d2f;
+  }
+
+  .postal-stamp {
+    @apply flex flex-col items-center justify-center rounded-full font-sans font-bold uppercase text-ink;
+    width: 104px;
+    height: 104px;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    border: 2px solid #1a1a1a;
+    opacity: 0.4;
+    outline: 2px solid #1a1a1a;
+    outline-offset: 4px;
+  }
+
+  /* ---- Markdown prose (rich CFP view) ---------------------------------- */
+  .kp-prose { @apply text-sm leading-7 text-ink-light; }
+  .kp-prose h1, .kp-prose h2, .kp-prose h3 {
+    @apply mb-2 mt-5 font-serif font-bold text-ink first:mt-0;
+    font-size: 1rem;
+  }
+  .kp-prose p { @apply mb-3; }
+  .kp-prose ul, .kp-prose ol { @apply mb-3 ml-5 list-disc space-y-1; }
+  .kp-prose ol { @apply list-decimal; }
+  .kp-prose a { @apply font-medium text-stamp underline underline-offset-2 hover:text-stamp-dark; }
+  .kp-prose strong { @apply font-bold text-ink; }
+  .kp-prose code { @apply border border-ink/15 bg-kraft-light px-1 py-0.5 font-mono text-xs; }
+
+  /* ---- Modal ----------------------------------------------------------- */
+  .modal-backdrop {
+    @apply fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center;
+    background: rgba(26, 26, 26, 0.45);
+    backdrop-filter: blur(5px);
+  }
+  .modal-panel {
+    @apply relative my-8 w-full max-w-2xl;
+    background: #faf3e8;
+    border-radius: 1rem;
+    box-shadow: 0 12px 30px rgba(26, 26, 26, 0.22);
+    animation: modal-pop 0.28s cubic-bezier(0.2, 0, 0, 1) both;
+  }
+}
+
+/* ---- Animations -------------------------------------------------------- */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes modal-pop {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes vote-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.animate-fade-in-up { animation: fade-in-up 0.4s ease both; }
+.animate-vote-pulse { animation: vote-pulse 0.4s ease; }
+
+@media (min-width: 640px) {
+  .page-title { font-size: 2.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

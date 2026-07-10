@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
 
 interface TalkResult {
@@ -9,21 +10,10 @@ interface TalkResult {
 }
 
 interface PublicResultsResponse {
-  conference: {
-    name: string
-    description: string | null
-  }
+  conference: { name: string; description: string | null }
   talks: TalkResult[]
-  stats: {
-    eligible_voters: number
-    participating_voters: number
-    total_votes: number
-  }
-  method: {
-    type: 'approval'
-    votes_per_voter: number
-    notes: string
-  }
+  stats: { eligible_voters: number; participating_voters: number; total_votes: number }
+  method: { type: 'approval'; votes_per_voter: number; notes: string }
 }
 
 export default function PublicResultsPage() {
@@ -34,92 +24,97 @@ export default function PublicResultsPage() {
   })
 
   if (isLoading) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-sm text-slate-500">
-        Loading results...
-      </div>
-    )
+    return <div className="mx-auto max-w-3xl px-4 py-16 text-center text-sm text-ink-faint">Loading results…</div>
   }
 
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
-        <div className="rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm">
-          <h1 className="text-2xl font-bold text-slate-950">Results are not public yet</h1>
-          <p className="mt-2 text-sm text-slate-600">
+        <div className="kp-card p-10 text-center">
+          <i className="ph-bold ph-eye-slash mb-2 text-4xl text-ink-faint" aria-hidden="true" />
+          <h1 className="page-title">Results are not public yet</h1>
+          <p className="mt-2 text-sm text-ink-light">
             Check back after the organizers publish the final results.
           </p>
+          <Link to="/" className="btn btn-outline mt-6">
+            <i className="ph-bold ph-arrow-left" aria-hidden="true" /> Back to home
+          </Link>
         </div>
       </div>
     )
   }
 
   const talks = data?.talks ?? []
+  const maxVotes = Math.max(1, ...talks.map((t) => t.vote_count))
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
+    <div className="min-h-screen text-ink">
       <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-        <div className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Public results</p>
-          <h1 className="text-2xl font-bold">{data?.conference.name}</h1>
+        <div className="kp-card mb-6 p-6">
+          <p className="supertitle mb-1">Public results</p>
+          <h1 className="page-title">{data?.conference.name}</h1>
           {data?.conference.description && (
-            <p className="mt-2 text-sm leading-6 text-slate-600">{data.conference.description}</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-light">{data.conference.description}</p>
           )}
         </div>
 
         {data && (
-          <div className="mb-6 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-xs font-medium text-slate-500">Participating voters</p>
-              <p className="mt-1 text-2xl font-semibold">{data.stats.participating_voters}</p>
-            </div>
-            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-xs font-medium text-slate-500">Total votes</p>
-              <p className="mt-1 text-2xl font-semibold">{data.stats.total_votes}</p>
-            </div>
-            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-xs font-medium text-slate-500">Votes per voter</p>
-              <p className="mt-1 text-2xl font-semibold">{data.method.votes_per_voter}</p>
-            </div>
-          </div>
-        )}
-
-        {data && (
-          <div className="mb-6 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
-            <p className="font-semibold text-slate-950">How voting worked</p>
-            <p className="mt-1">
-              Approval voting: voters could support up to {data.method.votes_per_voter} talks, and unused votes were allowed.
-            </p>
-            <p className="mt-1">{data.method.notes}</p>
+          <div className="card-grid mb-6 grid gap-4 sm:grid-cols-3">
+            {[
+              { icon: 'ph-users', label: 'Participating voters', value: data.stats.participating_voters },
+              { icon: 'ph-check-square', label: 'Total votes', value: data.stats.total_votes },
+              { icon: 'ph-scales', label: 'Votes per voter', value: data.method.votes_per_voter },
+            ].map((s) => (
+              <div key={s.label} className="kp-card p-5">
+                <i className={`ph-bold ${s.icon} text-2xl text-ink`} aria-hidden="true" />
+                <p className="supertitle mt-2">{s.label}</p>
+                <p className="font-serif text-3xl font-bold">{s.value}</p>
+              </div>
+            ))}
           </div>
         )}
 
         {talks.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-            No results available yet.
+          <div className="empty-state">
+            <i className="ph-bold ph-trophy text-3xl opacity-50" aria-hidden="true" />
+            <p className="font-serif text-lg font-bold text-ink">No results available yet</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="px-4 py-2 text-left font-medium text-slate-600">#</th>
-                  <th className="px-4 py-2 text-left font-medium text-slate-600">Talk</th>
-                  <th className="px-4 py-2 text-left font-medium text-slate-600">Presenter</th>
-                  <th className="px-4 py-2 text-right font-medium text-slate-600">Votes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {talks.map((talk, i) => (
-                  <tr key={talk.id} className="border-b border-slate-100 last:border-0">
-                    <td className="px-4 py-3 text-slate-400">{i + 1}</td>
-                    <td className="px-4 py-3 font-medium">{talk.title}</td>
-                    <td className="px-4 py-3 text-slate-600">{talk.presenter_name}</td>
-                    <td className="px-4 py-3 text-right font-semibold">{talk.vote_count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-3">
+            {talks.map((talk, i) => (
+              <div key={talk.id} className="kp-card flex items-center gap-4 p-4">
+                <span
+                  className={[
+                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-serif text-lg font-bold',
+                    i === 0 ? 'bg-ink text-paper' : 'bg-ink/8 text-ink-faint',
+                  ].join(' ')}
+                >
+                  {i + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-serif font-bold text-ink">{talk.title}</p>
+                  <p className="truncate text-sm text-ink-faint">{talk.presenter_name}</p>
+                  <div className="progress mt-2">
+                    <div className="progress-fill" style={{ width: `${(talk.vote_count / maxVotes) * 100}%` }} />
+                  </div>
+                </div>
+                <span className="shrink-0 text-right">
+                  <span className="font-serif text-xl font-bold">{talk.vote_count}</span>
+                  <span className="block text-xs text-ink-faint">votes</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {data && (
+          <div className="kp-card mt-6 p-5 text-sm text-ink-light">
+            <p className="section-title mb-1">How voting worked</p>
+            <p className="mt-1">
+              Approval voting: voters could support up to {data.method.votes_per_voter} talks, and unused votes were
+              allowed.
+            </p>
+            <p className="mt-1">{data.method.notes}</p>
           </div>
         )}
       </main>

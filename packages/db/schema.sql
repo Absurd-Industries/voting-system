@@ -27,6 +27,10 @@ CREATE TABLE IF NOT EXISTS talks (
   presenter_name   TEXT NOT NULL,
   presenter_bio    TEXT,
   presenter_email  TEXT,
+  talk_type        TEXT,
+  cfp_url          TEXT,
+  cfp_content      TEXT,
+  "references"     TEXT,
   created_at       INTEGER NOT NULL CHECK (created_at >= 0)
 );
 

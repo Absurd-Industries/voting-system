@@ -79,7 +79,7 @@ export default function ResultsPage() {
     },
   })
 
-  if (isLoading) return <div className="text-gray-500">Loading...</div>
+  if (isLoading) return <div className="text-sm uppercase tracking-wide text-stencil">Loading…</div>
 
   const talks = data?.talks ?? []
   const totalVotes = data?.stats.total_votes ?? talks.reduce((sum, t) => sum + t.vote_count, 0)
@@ -93,79 +93,74 @@ export default function ResultsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Admin</p>
-          <h1 className="text-2xl font-bold text-slate-950">Results</h1>
-          <p className="text-sm text-slate-500">{totalVotes} total votes cast</p>
+          <p className="supertitle">Admin</p>
+          <h1 className="page-title">Results</h1>
+          <p className="text-sm text-stencil">{totalVotes} total votes cast</p>
         </div>
-        <button onClick={handleExport}
-          className="min-h-11 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800">
-          Export CSV
-        </button>
+        <button onClick={handleExport} className="btn-ink">Export CSV</button>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm shadow-sm">
+      <div className="kp-card p-4 text-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-semibold text-slate-950">
+            <p className="section-title">
               Public results are {data?.results_public ? 'visible' : 'hidden'}.
             </p>
-            <p className="mt-1 text-slate-500">
+            <p className="mt-1 text-stencil">
               Publish when admins are ready for voters to see the ranked results page.
             </p>
           </div>
           <button
             onClick={() => publishResults.mutate(!(data?.results_public ?? false))}
             disabled={publishResults.isPending}
-            className="min-h-11 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            className="btn-label"
           >
             {data?.results_public ? 'Hide Public Results' : 'Publish Results'}
           </button>
         </div>
         {data?.results_public && (
-          <a href="/results" className="mt-3 inline-block text-sm font-medium text-blue-700 hover:text-blue-800">
+          <a href="/results" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-ink transition-colors hover:text-stamp">
             View public results
           </a>
         )}
       </div>
 
       {conference && (
-        <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm shadow-sm">
+        <div className="kp-card p-4 text-sm">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <span className={isOpen ? 'font-semibold text-emerald-700' : 'font-semibold text-amber-700'}>
+            <span className={isOpen ? 'font-bold uppercase text-funded' : 'font-bold uppercase text-ink-faint'}>
               {isOpen ? 'Voting is open; results may change.' : 'Voting is closed.'}
             </span>
             {showCountdown && (
-              <span className="text-slate-600">
+              <span className="text-ink-light">
                 {isOpen ? 'Closes in' : 'Opens in'} {formatDuration(boundary! - effectiveNow)}
               </span>
             )}
           </div>
           {conference.voting_closes_at && (
-            <p className="mt-1 text-slate-500">Scheduled close: {formatDateTime(conference.voting_closes_at)}</p>
+            <p className="mt-1 text-stencil">Scheduled close: {formatDateTime(conference.voting_closes_at)}</p>
           )}
         </div>
       )}
 
       {data && (
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-slate-500">Participating voters</p>
-            <p className="mt-1 text-2xl font-semibold text-slate-950">{data.stats.participating_voters}</p>
-          </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-slate-500">Total votes</p>
-            <p className="mt-1 text-2xl font-semibold text-slate-950">{data.stats.total_votes}</p>
-          </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-slate-500">Votes per voter</p>
-            <p className="mt-1 text-2xl font-semibold text-slate-950">{data.method.votes_per_voter}</p>
-          </div>
+          {[
+            { label: 'Participating voters', value: data.stats.participating_voters },
+            { label: 'Total votes', value: data.stats.total_votes },
+            { label: 'Votes per voter', value: data.method.votes_per_voter },
+          ].map(stat => (
+            <div key={stat.label} className="kp-card p-4">
+              <p className="supertitle">{stat.label}</p>
+              <p className="mt-1 text-2xl font-bold text-ink">{stat.value}</p>
+            </div>
+          ))}
         </div>
       )}
 
       {data && (
-        <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
-          <p className="font-semibold text-slate-950">Method</p>
+        <div className="kp-card p-4 text-sm text-ink-light">
+          <p className="section-title">Method</p>
           <p className="mt-1">
             Approval voting: each voter can support up to {data.method.votes_per_voter} talks. Unused votes are allowed.
             Talk order is randomized per voter while voting is open to reduce position bias.
@@ -175,34 +170,30 @@ export default function ResultsPage() {
       )}
 
       {talks.length === 0 && (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-          No talks or votes yet.
-        </div>
+        <div className="empty-state">No talks or votes yet.</div>
       )}
 
       {talks.length > 0 && (
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="px-4 py-2 text-left font-medium text-slate-600">#</th>
-                <th className="px-4 py-2 text-left font-medium text-slate-600">Talk</th>
-                <th className="px-4 py-2 text-left font-medium text-slate-600">Presenter</th>
-                <th className="px-4 py-2 text-right font-medium text-slate-600">Votes</th>
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Talk</th>
+              <th>Presenter</th>
+              <th className="!text-right">Votes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {talks.map((talk, i) => (
+              <tr key={talk.id}>
+                <td className="text-stencil">{i + 1}</td>
+                <td className="font-medium text-ink">{talk.title}</td>
+                <td className="text-ink-light">{talk.presenter_name}</td>
+                <td className="text-right font-bold text-ink">{talk.vote_count}</td>
               </tr>
-            </thead>
-            <tbody>
-              {talks.map((talk, i) => (
-                <tr key={talk.id} className="border-b border-slate-100 last:border-0">
-                  <td className="px-4 py-3 text-slate-400">{i + 1}</td>
-                  <td className="px-4 py-3 font-medium text-slate-950">{talk.title}</td>
-                  <td className="px-4 py-3 text-slate-600">{talk.presenter_name}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-950">{talk.vote_count}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   )

@@ -5,8 +5,11 @@ import type { Bindings } from '../index.js'
 // Uses authenticateRequest — Clerk's officially recommended method for Workers.
 export async function getClerkUserId(
   request: Request,
-  env: Pick<Bindings, 'CLERK_SECRET_KEY' | 'CLERK_PUBLISHABLE_KEY' | 'ALLOWED_ORIGIN'>
+  env: Pick<Bindings, 'CLERK_SECRET_KEY' | 'CLERK_PUBLISHABLE_KEY' | 'ALLOWED_ORIGIN' | 'DEV_NO_AUTH'>
 ): Promise<string | null> {
+  // Dev bypass: treat every request as a fixed local user, no Clerk required.
+  if (env.DEV_NO_AUTH === 'true') return 'dev-user'
+
   const clerk = createClerkClient({
     secretKey: env.CLERK_SECRET_KEY,
     publishableKey: env.CLERK_PUBLISHABLE_KEY,

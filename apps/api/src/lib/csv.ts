@@ -5,6 +5,18 @@ export interface CsvTalkRow {
   presenter_name: string
   presenter_bio: string | null
   presenter_email: string | null
+  talk_type: string | null
+  cfp_url: string | null
+  cfp_content: string | null
+  references: string | null
+}
+
+// Header aliases so the raw FOSS United submissions export imports directly.
+const HEADER_ALIASES: Record<string, string> = {
+  session_title: 'title',
+  speaker: 'presenter_name',
+  track: 'talk_type',
+  link: 'cfp_url',
 }
 
 export interface CsvError {
@@ -20,7 +32,10 @@ export function parseAndValidateCsv(csv: string): {
   const records = parseCsvRecords(csv)
   if (records.length < 2) return { rows: [], errors: [] }
 
-  const headers = records[0].map(h => h.trim().toLowerCase())
+  const headers = records[0].map(h => {
+    const key = h.trim().toLowerCase()
+    return HEADER_ALIASES[key] ?? key
+  })
 
   const rows: CsvTalkRow[] = []
   const errors: CsvError[] = []
@@ -65,6 +80,10 @@ export function parseAndValidateCsv(csv: string): {
       presenter_name: presenterName,
       presenter_bio: getOptional('presenter_bio'),
       presenter_email: getOptional('presenter_email'),
+      talk_type: getOptional('talk_type'),
+      cfp_url: getOptional('cfp_url'),
+      cfp_content: getOptional('cfp_content'),
+      references: getOptional('references'),
     })
   }
 

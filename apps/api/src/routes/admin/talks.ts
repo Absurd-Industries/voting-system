@@ -26,6 +26,10 @@ adminTalks.post('/', async (c) => {
     presenter_name: string
     presenter_bio?: string
     presenter_email?: string
+    talk_type?: string | null
+    cfp_url?: string | null
+    cfp_content?: string | null
+    references?: string | null
   }>()
 
   const errors: string[] = []
@@ -38,8 +42,8 @@ adminTalks.post('/', async (c) => {
 
   const id = crypto.randomUUID()
   await c.env.DB.prepare(`
-    INSERT INTO talks (id, conference_id, title, description, duration_minutes, presenter_name, presenter_bio, presenter_email, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO talks (id, conference_id, title, description, duration_minutes, presenter_name, presenter_bio, presenter_email, talk_type, cfp_url, cfp_content, "references", created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id, conf.id,
     body.title.trim(),
@@ -48,6 +52,10 @@ adminTalks.post('/', async (c) => {
     body.presenter_name.trim(),
     body.presenter_bio ?? null,
     body.presenter_email ?? null,
+    body.talk_type ?? null,
+    body.cfp_url ?? null,
+    body.cfp_content ?? null,
+    body.references ?? null,
     Date.now()
   ).run()
 
@@ -90,12 +98,13 @@ adminTalks.post('/import', async (c) => {
   const now = Date.now()
   const stmts = rows.map(row =>
     c.env.DB.prepare(`
-      INSERT INTO talks (id, conference_id, title, description, duration_minutes, presenter_name, presenter_bio, presenter_email, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO talks (id, conference_id, title, description, duration_minutes, presenter_name, presenter_bio, presenter_email, talk_type, cfp_url, cfp_content, "references", created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       crypto.randomUUID(), conf.id,
       row.title, row.description, row.duration_minutes,
       row.presenter_name, row.presenter_bio, row.presenter_email,
+      row.talk_type, row.cfp_url, row.cfp_content, row.references,
       now
     )
   )
@@ -126,6 +135,10 @@ adminTalks.put('/:id', async (c) => {
     presenter_name?: string
     presenter_bio?: string | null
     presenter_email?: string | null
+    talk_type?: string | null
+    cfp_url?: string | null
+    cfp_content?: string | null
+    references?: string | null
   }>()
 
   if (body.duration_minutes !== undefined && (!Number.isInteger(body.duration_minutes) || body.duration_minutes < 0)) {
@@ -139,7 +152,11 @@ adminTalks.put('/:id', async (c) => {
       duration_minutes = ?,
       presenter_name = ?,
       presenter_bio = ?,
-      presenter_email = ?
+      presenter_email = ?,
+      talk_type = ?,
+      cfp_url = ?,
+      cfp_content = ?,
+      "references" = ?
     WHERE id = ?
   `).bind(
     body.title ?? existing.title,
@@ -148,6 +165,10 @@ adminTalks.put('/:id', async (c) => {
     body.presenter_name ?? existing.presenter_name,
     body.presenter_bio !== undefined ? body.presenter_bio : existing.presenter_bio,
     body.presenter_email !== undefined ? body.presenter_email : existing.presenter_email,
+    body.talk_type !== undefined ? body.talk_type : existing.talk_type,
+    body.cfp_url !== undefined ? body.cfp_url : existing.cfp_url,
+    body.cfp_content !== undefined ? body.cfp_content : existing.cfp_content,
+    body.references !== undefined ? body.references : existing.references,
     talkId
   ).run()
 
