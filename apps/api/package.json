@@ -8,19 +8,21 @@
     "db:reset:local": "wrangler d1 execute cfp-voting --local --command \"DROP TABLE IF EXISTS audit_logs; DROP TABLE IF EXISTS votes; DROP TABLE IF EXISTS slot_types; DROP TABLE IF EXISTS talks; DROP TABLE IF EXISTS voters; DROP TABLE IF EXISTS admin_users; DROP TABLE IF EXISTS conferences;\" && wrangler d1 execute cfp-voting --local --file ../../packages/db/schema.sql",
     "db:seed:local": "wrangler d1 execute cfp-voting --local --file ../../packages/db/seed.sql",
     "db:reset-seed:local": "npm run db:reset:local && npm run db:seed:local",
+    "db:migrate:local": "wrangler d1 migrations apply cfp-voting --local",
+    "db:migrate:remote": "wrangler d1 migrations apply cfp-voting --remote",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@cfp/db": "*",
     "@clerk/backend": "^1.21.0",
-    "hono": "^4.6.0",
-    "@cfp/db": "*"
+    "hono": "^4.6.0"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.5.0",
     "@cloudflare/workers-types": "^4.20241022.0",
     "typescript": "^5.6.3",
     "vitest": "^2.1.0",
-    "wrangler": "^3.80.0"
+    "wrangler": "^4.112.0"
   }
 }

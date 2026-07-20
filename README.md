@@ -248,9 +248,16 @@ npm -w apps/web run build
 
 ## Deployment Notes
 
-API deployment uses Wrangler:
+Production runs entirely on Cloudflare:
+
+- API: Workers (`cfp-voting-api`)
+- Database: D1 (`cfp-voting`)
+- Frontend: Pages (`cfp-voting`)
+
+Apply database migrations and deploy the API with Wrangler:
 
 ```bash
+npm -w apps/api run db:migrate:remote
 npm -w apps/api run deploy
 ```
 
@@ -261,14 +268,18 @@ npm -w apps/web run build
 npm -w apps/web run deploy
 ```
 
-Before production deployment:
+Pushes to `main` run `.github/workflows/deploy.yml`. The workflow tests and
+builds the full project before applying D1 migrations and deploying the API and
+frontend. Configure these GitHub Actions settings:
 
-- Create a real D1 database.
-- Update `database_id` in `apps/api/wrangler.toml`.
-- Set `ALLOWED_ORIGIN` to the production web origin.
-- Set Clerk production keys.
-- Set production secrets through Cloudflare, not committed files.
-- Apply schema migrations to the production D1 database.
+- Secret `CLOUDFLARE_API_TOKEN`: scoped to Workers Scripts, Pages, and D1 edit access.
+- Secret `CLOUDFLARE_ACCOUNT_ID`: the target Cloudflare account ID.
+- Secret `VITE_CLERK_PUBLISHABLE_KEY`: the frontend Clerk publishable key.
+- Variable `VITE_API_URL`: the production Worker origin, without a trailing slash.
+
+The Worker stores `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, and
+`ADMIN_EMAIL` as Cloudflare runtime secrets. Do not add their values to the
+repository or workflow file.
 
 ## Existing Database Migrations
 

@@ -1,17 +1,17 @@
 name = "cfp-voting-api"
 main = "src/index.ts"
-compatibility_date = "2024-09-23"
+compatibility_date = "2026-07-20"
 compatibility_flags = ["nodejs_compat"]
 
 [[d1_databases]]
 binding = "DB"
 database_name = "cfp-voting"
-database_id = "local-db"
+database_id = "a103bdab-a3a4-4dd1-8848-0d1956a1ff30"
+migrations_dir = "migrations"
 
 [vars]
-# Update ALLOWED_ORIGIN to your Pages domain before production deployment
-# e.g. https://cfp-voting.pages.dev
-ALLOWED_ORIGIN = "http://localhost:5173"
+ALLOWED_ORIGIN = "https://cfp-voting.pages.dev"
+DEV_NO_AUTH = "false"
 # Optional extra admins. The first synced user becomes admin even if this is unset.
 # Comma-separated admin emails, e.g. "alice@example.com,bob@example.com"
 # ADMIN_EMAIL = ""
