@@ -120,14 +120,13 @@ export default function VotePage() {
       {/* Status */}
       {isOpen ? (
         <div className="status-open">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <span className="flex items-center gap-1.5 font-semibold">
-              <i className="ph-bold ph-check-circle" aria-hidden="true" /> Voting is open
-            </span>
-            <span>{isAdminPreview ? `${votesTotal} votes per voter` : `${votesUsed} of ${votesTotal} votes used`}</span>
-          </div>
+          <span className="flex items-center gap-1.5 font-semibold">
+            <i className="ph-bold ph-check-circle" aria-hidden="true" /> Voting is open
+          </span>
           {votingClosesAt && <p className="mt-1 text-funded/80">Closes {votingClosesAt}</p>}
-          {isAdminPreview && <p className="mt-1 text-funded/80">Admin preview: admins cannot cast votes.</p>}
+          {isAdminPreview && (
+            <p className="mt-1 text-funded/80">Admin preview: {votesTotal} votes per voter. Admins cannot cast votes.</p>
+          )}
         </div>
       ) : (
         <div className="status-warn">
