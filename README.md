@@ -137,7 +137,7 @@ Seed data includes:
 - eight talks
 - ten fake voters
 - seeded votes
-- public results enabled
+- public results hidden while seeded voting is open
 
 Seed data does not create admins, so the next real signed-in user can still become the bootstrap admin.
 

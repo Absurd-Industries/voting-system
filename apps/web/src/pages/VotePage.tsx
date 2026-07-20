@@ -96,7 +96,7 @@ export default function VotePage() {
   const countdownLabel = isOpen ? 'Time left' : 'Opens in'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 sm:pb-28">
       {/* Header */}
       <div className="kp-card flex flex-col gap-5 p-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">
@@ -149,6 +149,12 @@ export default function VotePage() {
         </div>
       </div>
 
+      {(castVote.error || retractVote.error) && (
+        <div className="status-error" role="alert">
+          {(castVote.error ?? retractVote.error)?.message}
+        </div>
+      )}
+
       {/* Filter pills */}
       {talkTypes.length > 2 && (
         <div className="flex flex-wrap items-center gap-2">
@@ -185,7 +191,8 @@ export default function VotePage() {
         <div className="card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleTalks.map((talk, i) => {
             const voted = votedIds.has(talk.id)
-            const canVote = isOpen && (!voted ? votesUsed < votesTotal : true)
+            const withdrawn = Boolean(talk.withdrawn_at)
+            const canVote = isOpen && !withdrawn && (!voted ? votesUsed < votesTotal : true)
             return (
               <div
                 key={talk.id}
@@ -199,11 +206,14 @@ export default function VotePage() {
                       <i className="ph-fill ph-check-circle" aria-hidden="true" /> Voted
                     </span>
                   )}
+                  {withdrawn && <span className="tag tag-danger">Withdrawn</span>}
                 </div>
                 <h2 className="font-serif text-lg font-bold leading-snug text-ink">{talk.title}</h2>
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-faint">
-                  <i className="ph-bold ph-user" aria-hidden="true" /> {talk.presenter_name}
-                </p>
+                {talk.presenter_name && (
+                  <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-faint">
+                    <i className="ph-bold ph-user" aria-hidden="true" /> {talk.presenter_name}
+                  </p>
+                )}
                 {talk.description && (
                   <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-ink-light">
                     {talk.description}
@@ -238,6 +248,19 @@ export default function VotePage() {
       )}
 
       {detailTalk && <TalkDetailModal talk={detailTalk} onClose={() => setDetailTalk(null)} />}
+
+      {isOpen && !isAdminPreview && (
+        <aside className="vote-progress-card" aria-live="polite" aria-label={`${votesUsed} of ${votesTotal} votes used`}>
+          <div className="flex items-center justify-between gap-5 text-xs font-bold uppercase tracking-wide">
+            <span>Your votes</span>
+            <span className="tabular-nums">{votesUsed} / {votesTotal}</span>
+          </div>
+          <div className="progress mt-2" aria-hidden="true">
+            <div className="progress-fill hot" style={{ width: `${votesTotal > 0 ? (votesUsed / votesTotal) * 100 : 0}%` }} />
+          </div>
+          <p className="mt-1.5 text-xs text-ink-faint">{Math.max(0, votesTotal - votesUsed)} remaining</p>
+        </aside>
+      )}
     </div>
   )
 }

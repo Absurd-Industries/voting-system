@@ -5,8 +5,9 @@ import { apiFetch } from '../lib/api.js'
 interface TalkResult {
   id: string
   title: string
-  presenter_name: string
+  presenter_name?: string
   vote_count: number
+  rank: number
 }
 
 interface PublicResultsResponse {
@@ -89,11 +90,11 @@ export default function PublicResultsPage() {
                     i === 0 ? 'bg-ink text-paper' : 'bg-ink/8 text-ink-faint',
                   ].join(' ')}
                 >
-                  {i + 1}
+                  {talk.rank ?? i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-serif font-bold text-ink">{talk.title}</p>
-                  <p className="truncate text-sm text-ink-faint">{talk.presenter_name}</p>
+                  {talk.presenter_name && <p className="truncate text-sm text-ink-faint">{talk.presenter_name}</p>}
                   <div className="progress mt-2">
                     <div className="progress-fill" style={{ width: `${(talk.vote_count / maxVotes) * 100}%` }} />
                   </div>

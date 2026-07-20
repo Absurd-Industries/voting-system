@@ -3,6 +3,7 @@
 -- can still become the bootstrap admin.
 
 DELETE FROM audit_logs;
+DELETE FROM organizer_tie_breaks;
 DELETE FROM votes;
 DELETE FROM voters;
 DELETE FROM slot_types;
@@ -18,6 +19,8 @@ INSERT INTO conferences (
   voting_force_status,
   votes_per_voter,
   results_public,
+  ballot_locked_at,
+  ballot_talk_count,
   created_at
 ) VALUES (
   'conf_test',
@@ -27,7 +30,9 @@ INSERT INTO conferences (
   1893456000000,
   'open',
   5,
-  1,
+  0,
+  1767225600000,
+  8,
   1767225600000
 );
 

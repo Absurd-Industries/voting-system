@@ -3,7 +3,7 @@ import { getConference, getTalksWithVoteCounts } from '../../db/queries.js'
 import type { Bindings, Variables } from '../../index.js'
 import { parseAndValidateCsv } from '../../lib/csv.js'
 import { logAdminAction } from '../../lib/audit.js'
-import type { Talk } from '@cfp/db'
+import { isBallotLocked, type Talk } from '@cfp/db'
 
 const adminTalks = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -18,6 +18,7 @@ adminTalks.get('/', async (c) => {
 adminTalks.post('/', async (c) => {
   const conf = await getConference(c.env.DB)
   if (!conf) return c.json({ error: 'No conference configured' }, 404)
+  if (isBallotLocked(conf)) return c.json({ error: 'The ballot is locked; talks cannot be added after voting starts.' }, 409)
 
   const body = await c.req.json<{
     title: string
@@ -70,6 +71,7 @@ adminTalks.post('/', async (c) => {
 adminTalks.post('/import', async (c) => {
   const conf = await getConference(c.env.DB)
   if (!conf) return c.json({ error: 'No conference configured' }, 404)
+  if (isBallotLocked(conf)) return c.json({ error: 'The ballot is locked; talks cannot be imported after voting starts.' }, 409)
 
   const contentType = c.req.header('content-type') ?? ''
   let csvText: string
@@ -121,6 +123,7 @@ adminTalks.post('/import', async (c) => {
 adminTalks.put('/:id', async (c) => {
   const conf = await getConference(c.env.DB)
   if (!conf) return c.json({ error: 'No conference configured' }, 404)
+  if (isBallotLocked(conf)) return c.json({ error: 'The ballot is locked; talk content cannot change after voting starts.' }, 409)
 
   const talkId = c.req.param('id')
   const existing = await c.env.DB.prepare(
@@ -189,6 +192,7 @@ adminTalks.put('/:id', async (c) => {
 adminTalks.delete('/:id', async (c) => {
   const conf = await getConference(c.env.DB)
   if (!conf) return c.json({ error: 'No conference configured' }, 404)
+  if (isBallotLocked(conf)) return c.json({ error: 'The ballot is locked. Withdraw the talk instead of deleting it.' }, 409)
 
   const talkId = c.req.param('id')
   const existing = await c.env.DB.prepare(
@@ -210,6 +214,24 @@ adminTalks.delete('/:id', async (c) => {
     vote_count_deleted: existing.vote_count,
   })
 
+  return c.json({ ok: true })
+})
+
+adminTalks.post('/:id/withdraw', async (c) => {
+  const conf = await getConference(c.env.DB)
+  if (!conf) return c.json({ error: 'No conference configured' }, 404)
+  const talkId = c.req.param('id')
+  const body = await c.req.json<{ reason?: string }>()
+  const reason = body.reason?.trim()
+  if (!reason) return c.json({ error: 'A withdrawal reason is required.' }, 422)
+
+  const result = await c.env.DB.prepare(`
+    UPDATE talks SET withdrawn_at = ?, withdrawal_reason = ?
+    WHERE id = ? AND conference_id = ? AND withdrawn_at IS NULL
+  `).bind(Date.now(), reason, talkId, conf.id).run()
+  if (result.meta.changes === 0) return c.json({ error: 'Active talk not found' }, 404)
+
+  await logAdminAction(c.env.DB, c.get('entityId'), 'withdraw', 'talk', talkId, { reason })
   return c.json({ ok: true })
 })
 

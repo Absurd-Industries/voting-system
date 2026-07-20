@@ -165,7 +165,7 @@ export default function LandingPage() {
       : null
 
   const daysToGo = Math.max(0, Math.ceil((EVENT_START - now) / DAY_MS))
-  const speakerCount = useMemo(() => new Set(talks.map((t) => t.presenter_name)).size, [talks])
+  const speakerCount = useMemo(() => new Set(talks.flatMap((t) => t.presenter_name ? [t.presenter_name] : [])).size, [talks])
   const talkTypes = useMemo(() => {
     const set = new Set<string>()
     talks.forEach((t) => t.talk_type && set.add(t.talk_type))
@@ -358,9 +358,11 @@ export default function LandingPage() {
               <h3 className="font-serif text-lg font-bold leading-snug text-ink transition-colors group-hover:text-stamp">
                 {talk.title}
               </h3>
-              <p className="mt-auto flex items-center justify-end gap-1.5 pt-4 text-right text-sm text-ink-faint">
-                <i className="ph-bold ph-user" aria-hidden="true" /> {talk.presenter_name}
-              </p>
+              {talk.presenter_name && (
+                <p className="mt-auto flex items-center justify-end gap-1.5 pt-4 text-right text-sm text-ink-faint">
+                  <i className="ph-bold ph-user" aria-hidden="true" /> {talk.presenter_name}
+                </p>
+              )}
             </button>
           ))}
         </div>

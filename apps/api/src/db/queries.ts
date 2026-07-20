@@ -10,6 +10,13 @@ export async function getTalksByConference(db: D1Database, conferenceId: string)
   ).bind(conferenceId).all<Talk>()
 }
 
+export async function getEligibleTalkCount(db: D1Database, conferenceId: string) {
+  const result = await db.prepare(
+    'SELECT COUNT(*) as count FROM talks WHERE conference_id = ? AND withdrawn_at IS NULL'
+  ).bind(conferenceId).first<{ count: number }>()
+  return result?.count ?? 0
+}
+
 export async function getTalksWithVoteCounts(db: D1Database, conferenceId: string) {
   return db.prepare(`
     SELECT t.*, COUNT(v.id) as vote_count
