@@ -17,7 +17,15 @@ interface Talk {
   cfp_content: string | null
   references: string | null
   vote_count: number
+  withdrawn_at: number | null
+  withdrawal_reason: string | null
 }
+
+interface ConferencePolicy {
+  ballot_locked: boolean
+}
+
+type TalkInput = Omit<Talk, 'id' | 'vote_count' | 'withdrawn_at' | 'withdrawal_reason'>
 
 function TalkForm({
   initial,
@@ -26,7 +34,7 @@ function TalkForm({
   isPending,
 }: {
   initial?: Partial<Talk>
-  onSave: (data: Omit<Talk, 'id' | 'vote_count'>) => void
+  onSave: (data: TalkInput) => void
   onCancel: () => void
   isPending: boolean
 }) {
@@ -106,22 +114,43 @@ export default function TalksPage() {
     queryKey: ['admin-talks'],
     queryFn: () => apiFetch<Talk[]>('/api/admin/talks'),
   })
+  const { data: conference } = useQuery({
+    queryKey: ['admin-conference'],
+    queryFn: () => apiFetch<ConferencePolicy>('/api/admin/conference'),
+  })
+  const ballotLocked = conference?.ballot_locked ?? false
 
   const createTalk = useMutation({
-    mutationFn: (data: Omit<Talk, 'id' | 'vote_count'>) =>
+    mutationFn: (data: TalkInput) =>
       apiFetch('/api/admin/talks', { method: 'POST', body: JSON.stringify(data) }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-talks'] }); setEditingId(null) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-talks'] })
+      qc.invalidateQueries({ queryKey: ['admin-conference'] })
+      setEditingId(null)
+    },
   })
 
   const updateTalk = useMutation({
-    mutationFn: ({ id, ...data }: Omit<Talk, 'vote_count'>) =>
+    mutationFn: ({ id, ...data }: TalkInput & { id: string }) =>
       apiFetch(`/api/admin/talks/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-talks'] }); setEditingId(null) },
   })
 
   const deleteTalk = useMutation({
     mutationFn: (id: string) => apiFetch(`/api/admin/talks/${id}`, { method: 'DELETE' }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-talks'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-talks'] })
+      qc.invalidateQueries({ queryKey: ['admin-conference'] })
+    },
+  })
+
+  const withdrawTalk = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      apiFetch(`/api/admin/talks/${id}/withdraw`, { method: 'POST', body: JSON.stringify({ reason }) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-talks'] })
+      qc.invalidateQueries({ queryKey: ['admin-conference'] })
+    },
   })
 
   const importCsv = useMutation({
@@ -135,6 +164,7 @@ export default function TalksPage() {
     },
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['admin-talks'] })
+      qc.invalidateQueries({ queryKey: ['admin-conference'] })
       setCsvSuccess(`Imported ${data.imported} talks.`)
       setCsvError(null)
       if (fileRef.current) fileRef.current.value = ''
@@ -156,7 +186,7 @@ export default function TalksPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Link to="/admin/results" className="btn-label">View Results</Link>
-          <button onClick={() => setEditingId('new')} className="btn-ink">+ Add Talk</button>
+          <button disabled={ballotLocked} onClick={() => setEditingId('new')} className="btn-ink">+ Add Talk</button>
         </div>
       </div>
 
@@ -170,7 +200,7 @@ export default function TalksPage() {
         {csvError && <pre className="status-error whitespace-pre-wrap">{csvError}</pre>}
         {csvSuccess && <p className="text-xs font-bold uppercase text-funded">{csvSuccess}</p>}
         <div className="flex flex-wrap items-center gap-2">
-          <input ref={fileRef} type="file" accept=".csv,text/csv"
+          <input ref={fileRef} disabled={ballotLocked} type="file" accept=".csv,text/csv"
             onChange={e => {
               const file = e.target.files?.[0]
               if (file) importCsv.mutate(file)
@@ -213,6 +243,7 @@ export default function TalksPage() {
                       </span>
                     )}
                     <h3 className="font-bold text-ink">{talk.title}</h3>
+                    {talk.withdrawn_at && <span className="tag tag-danger">Withdrawn</span>}
                   </div>
                   <p className="text-sm text-stencil">{talk.presenter_name}</p>
                   {talk.description && <p className="mt-1 line-clamp-2 text-sm leading-6 text-ink-light">{talk.description}</p>}
@@ -221,14 +252,19 @@ export default function TalksPage() {
                   <span className="text-sm text-stencil">{talk.vote_count} votes</span>
                   <button onClick={() => setDetailTalk(talk)}
                     className="min-h-11 text-sm font-bold uppercase tracking-wide text-ink hover:text-stamp">Details</button>
-                  <button onClick={() => setEditingId(talk.id)}
+                  <button disabled={ballotLocked} onClick={() => setEditingId(talk.id)}
                     className="min-h-11 text-sm font-bold uppercase tracking-wide text-ink hover:text-stamp">Edit</button>
-                  <button
-                    onClick={() => {
+                  {ballotLocked && !talk.withdrawn_at ? (
+                    <button onClick={() => {
+                      const reason = window.prompt(`Why is "${talk.title}" being withdrawn?`)
+                      if (reason?.trim()) withdrawTalk.mutate({ id: talk.id, reason: reason.trim() })
+                    }} className="min-h-11 text-sm font-semibold text-ink-faint transition-colors hover:text-red-700">Withdraw</button>
+                  ) : !ballotLocked && !talk.withdrawn_at ? (
+                    <button onClick={() => {
                       if (confirm(`Delete "${talk.title}"?${talk.vote_count > 0 ? ` This will also delete ${talk.vote_count} vote(s).` : ''}`))
                         deleteTalk.mutate(talk.id)
-                    }}
-                    className="min-h-11 text-sm font-semibold text-ink-faint transition-colors hover:text-red-700">Delete</button>
+                    }} className="min-h-11 text-sm font-semibold text-ink-faint transition-colors hover:text-red-700">Delete</button>
+                  ) : null}
                 </div>
               </div>
             )}

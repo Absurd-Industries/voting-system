@@ -3,6 +3,7 @@ import { getConference, getTalksByConference } from '../db/queries.js'
 import { getVotingStatus } from '@cfp/db'
 import type { Bindings, Variables } from '../index.js'
 import { requireAuth } from '../middleware/auth.js'
+import { serializePublicTalk } from '../lib/talk-response.js'
 
 const conference = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -21,6 +22,7 @@ conference.get('/conference', async (c) => {
     voting_status: status,
     votes_per_voter: conf.votes_per_voter,
     results_public: conf.results_public === 1,
+    speaker_visibility: conf.speaker_visibility,
     server_now: now,
   })
 })
@@ -40,17 +42,7 @@ conference.get('/talks/archive', async (c) => {
     ;[archive[i], archive[j]] = [archive[j], archive[i]]
   }
 
-  return c.json(archive.map(t => ({
-    id: t.id,
-    title: t.title,
-    description: t.description,
-    presenter_name: t.presenter_name,
-    presenter_bio: t.presenter_bio,
-    talk_type: t.talk_type,
-    cfp_url: t.cfp_url,
-    cfp_content: t.cfp_content,
-    references: t.references,
-  })))
+  return c.json(archive.map(t => serializePublicTalk(t, conf.speaker_visibility)))
 })
 
 function stableHash(value: string) {
@@ -72,18 +64,7 @@ conference.get('/talks', requireAuth, async (c) => {
     ? [...talks].sort((a, b) => stableHash(`${entityId}:${a.id}`) - stableHash(`${entityId}:${b.id}`))
     : talks
 
-  return c.json(orderedTalks.map(t => ({
-    id: t.id,
-    title: t.title,
-    description: t.description,
-    presenter_name: t.presenter_name,
-    presenter_bio: t.presenter_bio,
-    talk_type: t.talk_type,
-    cfp_url: t.cfp_url,
-    cfp_content: t.cfp_content,
-    references: t.references,
-  })))
-  // Note: presenter_email is intentionally excluded from the public response
+  return c.json(orderedTalks.map(t => serializePublicTalk(t, conf.speaker_visibility)))
 })
 
 export default conference

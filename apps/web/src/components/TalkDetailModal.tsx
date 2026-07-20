@@ -6,12 +6,14 @@ export interface TalkDetail {
   id: string
   title: string
   description: string | null
-  presenter_name: string
-  presenter_bio: string | null
+  presenter_name?: string
+  presenter_bio?: string | null
   talk_type?: string | null
   cfp_url?: string | null
   cfp_content?: string | null
   references?: string | null
+  withdrawn_at?: number | null
+  withdrawal_reason?: string | null
 }
 
 function parseReferences(raw: string | null | undefined): Reference[] {
@@ -63,10 +65,12 @@ export default function TalkDetailModal({
           <div className="min-w-0">
             {talk.talk_type && <span className="tag tag-muted mb-2">{talk.talk_type}</span>}
             <h2 className="font-serif text-2xl font-bold leading-tight text-ink">{talk.title}</h2>
-            <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-faint">
-              <i className="ph-bold ph-user" aria-hidden="true" />
-              {talk.presenter_name}
-            </p>
+            {talk.presenter_name && (
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-faint">
+                <i className="ph-bold ph-user" aria-hidden="true" />
+                {talk.presenter_name}
+              </p>
+            )}
           </div>
           <button
             onClick={onClose}

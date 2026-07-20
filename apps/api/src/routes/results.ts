@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { getConference, getTalksWithVoteCounts, getVoteStats } from '../db/queries.js'
 import type { Bindings, Variables } from '../index.js'
+import { rankTalks, serializePublicTalk } from '../lib/talk-response.js'
 
 const results = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -13,6 +14,7 @@ results.get('/', async (c) => {
   }
 
   const { results: talks } = await getTalksWithVoteCounts(c.env.DB, conf.id)
+  const rankedTalks = rankTalks(talks)
   const stats = await getVoteStats(c.env.DB, conf.id)
 
   return c.json({
@@ -20,7 +22,7 @@ results.get('/', async (c) => {
       name: conf.name,
       description: conf.description,
     },
-    talks,
+    talks: rankedTalks.map(talk => serializePublicTalk(talk, conf.speaker_visibility)),
     stats,
     method: {
       type: 'approval',

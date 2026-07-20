@@ -8,6 +8,7 @@ interface TalkResult {
   title: string
   presenter_name: string
   vote_count: number
+  rank: number
 }
 
 interface ResultsResponse {
@@ -23,6 +24,13 @@ interface ResultsResponse {
     votes_per_voter: number
     notes: string
   }
+  tie_breaks: Array<{
+    id: string
+    selected_talk_id: string
+    tied_talk_ids: string[]
+    reason: string
+    admin_email: string | null
+  }>
 }
 
 interface Conference {
@@ -79,11 +87,22 @@ export default function ResultsPage() {
     },
   })
 
+  const recordTieBreak = useMutation({
+    mutationFn: (payload: { selected_talk_id: string; tied_talk_ids: string[]; reason: string }) =>
+      apiFetch('/api/admin/results/tie-breaks', { method: 'POST', body: JSON.stringify(payload) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-results'] }),
+  })
+
   if (isLoading) return <div className="text-sm uppercase tracking-wide text-stencil">Loading…</div>
 
   const talks = data?.talks ?? []
   const totalVotes = data?.stats.total_votes ?? talks.reduce((sum, t) => sum + t.vote_count, 0)
   const isOpen = conference?.voting_status === 'open'
+  const tieGroups = Object.values(talks.reduce<Record<string, TalkResult[]>>((groups, talk) => {
+    const key = String(talk.vote_count)
+    ;(groups[key] ??= []).push(talk)
+    return groups
+  }, {})).filter(group => group.length > 1)
   const boundary = isOpen ? conference?.voting_closes_at : conference?.voting_opens_at
   const offset = conference ? conference.server_now - Date.now() : 0
   const effectiveNow = now + offset
@@ -186,7 +205,7 @@ export default function ResultsPage() {
           <tbody>
             {talks.map((talk, i) => (
               <tr key={talk.id}>
-                <td className="text-stencil">{i + 1}</td>
+                <td className="text-stencil">{talk.rank ?? i + 1}</td>
                 <td className="font-medium text-ink">{talk.title}</td>
                 <td className="text-ink-light">{talk.presenter_name}</td>
                 <td className="text-right font-bold text-ink">{talk.vote_count}</td>
@@ -194,6 +213,39 @@ export default function ResultsPage() {
             ))}
           </tbody>
         </table>
+      )}
+
+      {tieGroups.length > 0 && (
+        <div className="kp-card space-y-4 p-5">
+          <div>
+            <h2 className="section-title">Organizer Tie-breaks</h2>
+            <p className="mt-1 text-sm text-stencil">Community totals stay unchanged. Record a separate scheduling decision after voting closes.</p>
+          </div>
+          {tieGroups.map(group => (
+            <div key={group[0].vote_count} className="border-t border-ink/10 pt-3">
+              <p className="text-sm font-bold">{group[0].vote_count} votes each</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {group.map(talk => (
+                  <button key={talk.id} className="btn-label btn-sm" disabled={isOpen || recordTieBreak.isPending}
+                    onClick={() => {
+                      const reason = window.prompt(`Why should "${talk.title}" win this organizer tie-break?`)
+                      if (reason?.trim()) recordTieBreak.mutate({
+                        selected_talk_id: talk.id,
+                        tied_talk_ids: group.map(item => item.id),
+                        reason: reason.trim(),
+                      })
+                    }}>Choose {talk.title}</button>
+                ))}
+              </div>
+            </div>
+          ))}
+          {(data?.tie_breaks ?? []).map(decision => (
+            <p key={decision.id} className="text-xs text-stencil">
+              Selected {talks.find(talk => talk.id === decision.selected_talk_id)?.title ?? decision.selected_talk_id}: {decision.reason}
+              {decision.admin_email ? ` — ${decision.admin_email}` : ''}
+            </p>
+          ))}
+        </div>
       )}
     </div>
   )
