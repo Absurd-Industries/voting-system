@@ -45,26 +45,15 @@ conference.get('/talks/archive', async (c) => {
   return c.json(archive.map(t => serializePublicTalk(t, conf.speaker_visibility)))
 })
 
-function stableHash(value: string) {
-  let hash = 2166136261
-  for (let i = 0; i < value.length; i++) {
-    hash ^= value.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  return hash >>> 0
-}
-
+// Talk order for voters is randomized client-side, per browser session (see the
+// voting page). This endpoint returns talks in a stable order and lets the client
+// own presentation ordering.
 conference.get('/talks', requireAuth, async (c) => {
   const conf = await getConference(c.env.DB)
   if (!conf) return c.json({ error: 'No conference configured yet' }, 404)
 
   const { results: talks } = await getTalksByConference(c.env.DB, conf.id)
-  const entityId = c.get('entityId')
-  const orderedTalks = c.get('role') === 'voter'
-    ? [...talks].sort((a, b) => stableHash(`${entityId}:${a.id}`) - stableHash(`${entityId}:${b.id}`))
-    : talks
-
-  return c.json(orderedTalks.map(t => serializePublicTalk(t, conf.speaker_visibility)))
+  return c.json(talks.map(t => serializePublicTalk(t, conf.speaker_visibility)))
 })
 
 export default conference

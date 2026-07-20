@@ -2,7 +2,7 @@
 
 A lightweight conference proposal voting app for collecting audience interest, ranking talks, and publishing final results when organizers are ready.
 
-The app uses approval voting: each voter can support up to a configured number of talks. Talk order is randomized per voter to reduce position bias, live results are admin-only, and organizers can publish a public results page after review.
+The app uses approval voting: each voter can support up to a configured number of talks. Talk order reshuffles each session (talks a voter has already picked stay pinned on top) so no talk stays buried for a returning voter, live results are admin-only, and organizers can publish a public results page after review.
 
 ## Features
 
@@ -12,7 +12,7 @@ The app uses approval voting: each voter can support up to a configured number o
 - Admin management with safe removal rules
 - Conference setup with voting window and manual open/closed override
 - Explicit vote budget per voter
-- Stable randomized talk order per voter
+- Per-session shuffled talk order, with voted talks pinned on top
 - Voters can change selections until voting closes
 - Admin-only live results
 - Public results page controlled by an admin publish/hide switch
@@ -56,8 +56,25 @@ To reduce bias:
 
 - Voters do not see live results.
 - Results stay admin-only until published.
-- Talk order is randomized per voter, but stable for that voter.
+- Talk order reshuffles each browser session; talks the voter has already picked stay pinned on top, and the undecided remainder is shuffled fresh so no talk stays permanently buried for a returning voter.
 - Published results include voting method and participation stats.
+
+## Design Trade-offs
+
+### Withdrawn talks and the vote budget
+
+If a talk is withdrawn *after* voting opens, any votes already cast for it stay
+counted against each voter's budget — the vote is **not** automatically
+refunded, and the withdrawn talk still appears (clearly marked as withdrawn)
+with its historical vote count.
+
+This is a deliberate choice, not an oversight. Our pre-voting review process
+vets and finalizes the talk list before the ballot opens, so mid-voting
+withdrawals are rare by design. Because the ballot is locked once voting starts,
+we accept the small edge case rather than add automatic budget refunds and the
+complexity they bring. Voters can still manually retract a vote from a withdrawn
+talk to free the slot while voting is open, and organizers exclude withdrawn
+talks when interpreting final results.
 
 ## Auth And Admins
 
