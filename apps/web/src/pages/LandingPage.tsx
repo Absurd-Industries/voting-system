@@ -45,9 +45,10 @@ const VIDEOS = [
 
 // "Friends of Absurd" set, matching the Absurd homepage marquee.
 const COLLABORATORS = [
+  { img: '/images/partners/sillycuts.jpeg', name: 'SillyCuts', href: 'https://www.sillycuts.com/' },
   { img: '/images/partners/pcb-cupid.png', name: 'PCB Cupid', href: 'https://pcbcupid.com' },
   { img: '/images/partners/ampere-works.png', name: 'ampere.works', href: 'https://ampere.works' },
-  { img: '/images/partners/vader.png', name: 'Vader', href: 'https://uservader.com' },
+  { img: '/images/partners/vader.png', name: 'Vader', href: 'https://usevader.dev' },
   { img: '/images/partners/makerville.svg', name: 'Makerville', href: 'https://makerville.io' },
   { img: '/images/partners/foss-united.svg', name: 'FOSS United', href: 'https://fossunited.org' },
   { img: '/images/partners/mecha.svg', name: 'Mecha', href: 'https://mecha.so/' },
@@ -494,8 +495,15 @@ export default function LandingPage() {
         <p className="mb-6 max-w-2xl text-lg text-ink-light">This devroom is organized with involvement from communities across the Indian open hardware and FOSS ecosystem.</p>
         <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-8">
           {COLLABORATORS.map((c) => (
-            <a key={c.name} href={c.href} target="_blank" rel="noreferrer" className="group flex flex-col items-center gap-2">
-              <img src={c.img} alt={c.name} className="h-12 object-contain opacity-80 transition-opacity group-hover:opacity-100 sm:h-14" loading="lazy" />
+            <a key={c.name} href={c.href} target="_blank" rel="noreferrer" className="group flex w-36 flex-col items-center gap-2">
+              <img
+                src={c.img}
+                alt={c.name}
+                className={`h-14 object-contain opacity-80 transition-opacity group-hover:opacity-100 sm:h-16 ${
+                  c.name === 'SillyCuts' ? 'w-14 rounded-lg sm:w-16' : 'w-32'
+                }`}
+                loading="lazy"
+              />
               <span className="font-mono text-[0.65rem] font-bold uppercase tracking-widest text-ink-faint transition-colors group-hover:text-stamp">{c.name}</span>
             </a>
           ))}
