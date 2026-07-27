@@ -45,7 +45,7 @@ conference.get('/talks/archive', async (c) => {
   return c.json(archive.map(t => serializePublicTalk(t, conf.speaker_visibility)))
 })
 
-// Talk order for voters is randomized client-side, per browser session (see the
+// Talk order for voters is randomized client-side, per visit (see the
 // voting page). This endpoint returns talks in a stable order and lets the client
 // own presentation ordering.
 conference.get('/talks', requireAuth, async (c) => {

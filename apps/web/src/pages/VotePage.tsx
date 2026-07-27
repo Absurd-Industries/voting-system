@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '../lib/api.js'
 import { formatDateTime, formatDuration } from '../lib/time.js'
+import { createVisitTalkOrder } from '../lib/talk-order.js'
 import TalkDetailModal, { type TalkDetail } from '../components/TalkDetailModal.js'
 
 interface Conference {
@@ -22,27 +23,6 @@ interface VotesResponse {
   votes_per_voter: number
 }
 
-// Deterministic PRNG so a given session seed always yields the same tail order,
-// even across reloads and remounts within that browser session.
-function seedFromString(value: string) {
-  let hash = 2166136261
-  for (let i = 0; i < value.length; i++) {
-    hash ^= value.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  return hash >>> 0
-}
-
-function mulberry32(seed: number) {
-  let state = seed >>> 0
-  return () => {
-    state = (state + 0x6d2b79f5) | 0
-    let t = Math.imul(state ^ (state >>> 15), 1 | state)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
 function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(Date.now())
   useEffect(() => {
@@ -57,21 +37,6 @@ export default function VotePage() {
   const now = useNow()
   const [detailTalk, setDetailTalk] = useState<Talk | null>(null)
   const [filter, setFilter] = useState<string>('All')
-
-  // A fresh seed per browser session (new tab/window), stable across reloads
-  // within that session. Drives the tail reshuffle below.
-  const [orderSeed] = useState(() => {
-    const KEY = 'cfp:talk-order-seed'
-    try {
-      const existing = sessionStorage.getItem(KEY)
-      if (existing) return existing
-      const fresh = crypto.randomUUID?.() ?? Math.random().toString(36).slice(2)
-      sessionStorage.setItem(KEY, fresh)
-      return fresh
-    } catch {
-      return Math.random().toString(36).slice(2)
-    }
-  })
 
   const { data: conference, isLoading: confLoading } = useQuery({
     queryKey: ['conference'],
@@ -115,10 +80,10 @@ export default function VotePage() {
     return ['All', ...Array.from(set)]
   }, [talks])
 
-  // Per-session talk order: talks the voter had already picked when this session
+  // Per-visit talk order: talks the voter had already picked when this visit
   // started stay pinned on top (stable order); the undecided "tail" is shuffled
-  // with the session seed. Frozen once per session so casting/retracting a vote
-  // during this visit never makes cards jump — a new session reshuffles the tail
+  // once. Frozen for the visit so casting/retracting a vote
+  // during this visit never makes cards jump — a new visit reshuffles the tail
   // so no talk stays permanently buried for a returning voter.
   const votesReady = myVotes !== undefined
   const [sessionOrder, setSessionOrder] = useState<string[] | null>(null)
@@ -126,15 +91,8 @@ export default function VotePage() {
     if (sessionOrder || talks.length === 0 || !votesReady) return
     const voted = new Set(myVotes?.votes ?? [])
     const ids = talks.map((t) => t.id)
-    const head = ids.filter((id) => voted.has(id))
-    const tail = ids.filter((id) => !voted.has(id))
-    const rand = mulberry32(seedFromString(orderSeed))
-    for (let i = tail.length - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1))
-      ;[tail[i], tail[j]] = [tail[j], tail[i]]
-    }
-    setSessionOrder([...head, ...tail])
-  }, [talks, votesReady, sessionOrder, orderSeed, myVotes])
+    setSessionOrder(createVisitTalkOrder(ids, voted, Math.random))
+  }, [talks, votesReady, sessionOrder, myVotes])
 
   const orderedTalks = useMemo(() => {
     if (!sessionOrder) return talks
