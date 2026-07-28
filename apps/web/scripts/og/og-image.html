@@ -1,0 +1,177 @@
+<!doctype html>
+<!--
+  Source for the social share card. Rendered to apps/web/public/og-image.png by
+  scripts/og/render-og.mjs (headless Chrome -> sharp). Edit here, then re-run:
+      node apps/web/scripts/og/render-og.mjs
+  Uses the real kraft tokens: kraft paper ground, torn cream card, Fraunces
+  display, Space Mono labels. No orange - that stays an interaction colour.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Space+Mono:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background-color: #d4b896;
+        background-image: url('../../public/images/kraft-paper.jpg');
+        background-repeat: repeat;
+        font-family: 'DM Sans', system-ui, sans-serif;
+        color: #1a1a1a;
+      }
+
+      .frame { position: relative; width: 1200px; height: 630px; padding: 40px; }
+
+      /* Torn cream card, same feTurbulence trick as the site */
+      .card { position: relative; width: 100%; height: 100%; }
+      .card-bg {
+        position: absolute;
+        inset: 0;
+        background: #faf3e8;
+        border-radius: 14px;
+        filter: url(#papercut);
+      }
+      .card-body {
+        position: relative;
+        height: 100%;
+        padding: 44px 60px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        align-self: flex-start;
+        border: 2.5px solid #1a1a1a;
+        padding: 8px 15px;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 17px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin-top: 24px;
+        font-family: 'Fraunces', Georgia, serif;
+        font-weight: 900;
+        font-size: 82px;
+        line-height: 0.88;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+      }
+
+      .rule { margin-top: 20px; width: 190px; height: 6px; background: #1a1a1a; border-radius: 999px; }
+
+      .tagline {
+        margin-top: 18px;
+        max-width: 720px;
+        font-size: 24px;
+        line-height: 1.4;
+        color: #3d3d3d;
+      }
+
+      /* Bottom strip: when + where, and who's behind it */
+      .foot {
+        margin-top: auto;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 32px;
+      }
+      .when {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 23px;
+        letter-spacing: 0.04em;
+      }
+      .dot { width: 7px; height: 7px; border-radius: 50%; background: #4a3d2f; opacity: 0.5; }
+
+      .brands { display: flex; align-items: center; gap: 22px; opacity: 0.9; }
+      .brands img { height: 42px; object-fit: contain; }
+      .brands .x { font-size: 22px; color: #4a3d2f; }
+
+      /* Postal seal, top right */
+      .stamp {
+        position: absolute;
+        top: 44px;
+        right: 54px;
+        width: 118px;
+        height: 118px;
+        border: 3px solid #1a1a1a;
+        border-radius: 50%;
+        outline: 2px solid #1a1a1a;
+        outline-offset: 6px;
+        opacity: 0.32;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        transform: rotate(-8deg);
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute">
+      <filter id="papercut">
+        <feTurbulence type="turbulence" baseFrequency="0.014" numOctaves="4" result="n" seed="7" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+
+    <div class="frame">
+      <div class="card">
+        <div class="card-bg"></div>
+        <div class="card-body">
+          <span class="eyebrow">IndiaFOSS 2026</span>
+
+          <h1>Open<br />Hardware<br />Devroom</h1>
+
+          <div class="rule"></div>
+
+          <p class="tagline">
+            Talks, demos, and hard-won lessons from the people building open hardware in India.
+          </p>
+
+          <div class="foot">
+            <div class="when">
+              <span>26-27 Sep</span>
+              <span class="dot"></span>
+              <span>Bengaluru</span>
+            </div>
+            <div class="brands">
+              <img src="../../public/images/absurd-logo-for-any-background.png" alt="" />
+              <span class="x">&times;</span>
+              <img src="../../public/images/partners/foss-united.svg" alt="" />
+            </div>
+          </div>
+        </div>
+
+        <div class="stamp">
+          <span>Bengaluru</span>
+          <span>2026</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
