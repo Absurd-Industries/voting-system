@@ -82,7 +82,7 @@ export default function TalkDetailModal({
         </div>
 
         {/* Body */}
-        <div className="max-h-[62vh] overflow-y-auto px-6 py-6">
+        <div className="max-h-[62vh] min-w-0 overflow-x-hidden overflow-y-auto px-6 py-6">
           {body ? (
             <div className="kp-prose">
               <ReactMarkdown>{body}</ReactMarkdown>

@@ -236,7 +236,7 @@ export default function VotePage() {
           <p className="text-sm">Check back soon.</p>
         </div>
       ) : (
-        <div className="card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="card-grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleTalks.map((talk, i) => {
             const voted = votedIds.has(talk.id)
             const withdrawn = Boolean(talk.withdrawn_at)
@@ -244,7 +244,7 @@ export default function VotePage() {
             return (
               <div
                 key={talk.id}
-                className="kp-card card-hover animate-fade-in-up flex flex-col p-5"
+                className="kp-card card-hover animate-fade-in-up flex min-w-0 flex-col p-5"
                 style={{ animationDelay: `${Math.min(i, 12) * 0.04}s` }}
               >
                 <div className="mb-2 flex items-center gap-2">

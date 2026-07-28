@@ -60,7 +60,7 @@ export default function PublicResultsPage() {
         </div>
 
         {data && (
-          <div className="card-grid mb-6 grid gap-4 sm:grid-cols-3">
+          <div className="card-grid mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {[
               { icon: 'ph-users', label: 'Participating voters', value: data.stats.participating_voters },
               { icon: 'ph-check-square', label: 'Total votes', value: data.stats.total_votes },

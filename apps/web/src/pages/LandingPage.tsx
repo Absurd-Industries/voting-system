@@ -196,13 +196,9 @@ export default function LandingPage() {
     <div className="pb-20">
       {/* Event bar - the countdown to the two days */}
       <div className="bg-ink text-paper">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-5 gap-y-1 px-4 py-2 text-center text-xs font-semibold sm:text-sm">
+        <div className="mx-auto flex max-w-5xl flex-nowrap items-center justify-center gap-2.5 whitespace-nowrap px-4 py-2 text-xs font-semibold sm:gap-4 sm:text-sm">
           <span className="flex items-center gap-1.5">
-            <i className="ph-bold ph-calendar-blank" aria-hidden="true" /> 26-27 September 2026
-          </span>
-          <span className="text-paper/30" aria-hidden="true">·</span>
-          <span className="flex items-center gap-1.5">
-            <i className="ph-bold ph-map-pin" aria-hidden="true" /> Bengaluru
+            <i className="ph-bold ph-calendar-blank" aria-hidden="true" /> 26-27 Sep
           </span>
           <span className="text-paper/30" aria-hidden="true">·</span>
           <span className="flex items-center gap-1.5">
@@ -371,12 +367,12 @@ export default function LandingPage() {
           </div>
         )}
 
-        <div className="card-grid mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="card-grid mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleTalks.map((talk, i) => (
             <button
               key={talk.id}
               onClick={() => setDetailTalk(talk)}
-              className="kp-card card-hover animate-fade-in-up group flex flex-col p-5 text-left"
+              className="kp-card card-hover animate-fade-in-up group flex min-w-0 flex-col p-5 text-left"
               style={{ animationDelay: `${Math.min(i, 12) * 0.03}s` }}
             >
               {talk.talk_type && <span className="tag tag-muted mb-3 self-start">{talk.talk_type}</span>}
@@ -425,7 +421,7 @@ export default function LandingPage() {
       {/* What we hope to do */}
       <Section className="mt-20">
         <Eyebrow>What We Hope To Do</Eyebrow>
-        <div className="card-grid grid gap-4 sm:grid-cols-2">
+        <div className="card-grid grid grid-cols-1 gap-4 sm:grid-cols-2">
           {HOPE_TO_DO.map((item) => (
             <div key={item} className="kp-card flex items-start gap-3 p-5">
               <i className="ph-bold ph-check-circle mt-0.5 shrink-0 text-xl text-funded" aria-hidden="true" />
@@ -439,7 +435,7 @@ export default function LandingPage() {
       <Section className="mt-20">
         <Eyebrow>From the Community</Eyebrow>
         <p className="mb-6 max-w-2xl text-lg text-ink-light">Projects from past devrooms and the broader open hardware community.</p>
-        <div className="card-grid grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+        <div className="card-grid grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
           {PROJECTS.map((p) => {
             const inner = (
               <>
@@ -543,7 +539,7 @@ export default function LandingPage() {
       {/* Managers */}
       <Section className="mt-20">
         <Eyebrow>Devroom Managers</Eyebrow>
-        <div className="card-grid grid gap-4 sm:grid-cols-2">
+        <div className="card-grid grid grid-cols-1 gap-4 sm:grid-cols-2">
           {MANAGERS.map((m) => (
             <div key={m.name} className="kp-card flex items-center gap-4 p-5">
               <img src={m.avatar} alt={m.name} className="h-16 w-16 shrink-0 rounded-full object-cover" loading="lazy" />

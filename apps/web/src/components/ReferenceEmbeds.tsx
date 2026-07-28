@@ -72,7 +72,7 @@ function RepoCard({ reference: r, repo }: { reference: Reference; repo: { host: 
       href={r.url}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center gap-3 rounded-xl border border-ink/12 bg-paper/50 px-4 py-3 transition-colors hover:border-ink/30 hover:bg-paper"
+      className="group flex min-w-0 items-center gap-3 rounded-xl border border-ink/12 bg-paper/50 px-4 py-3 transition-colors hover:border-ink/30 hover:bg-paper"
     >
       <i className={`ph-fill ${icon} text-2xl text-ink`} aria-hidden="true" />
       <span className="min-w-0 flex-1">
@@ -95,7 +95,7 @@ function LinkCard({ reference: r }: { reference: Reference }) {
       href={r.url}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center gap-3 rounded-xl border border-ink/12 bg-paper/50 px-4 py-3 transition-colors hover:border-ink/30 hover:bg-paper"
+      className="group flex min-w-0 items-center gap-3 rounded-xl border border-ink/12 bg-paper/50 px-4 py-3 transition-colors hover:border-ink/30 hover:bg-paper"
     >
       <img
         src={faviconFor(r.url)}
@@ -125,14 +125,14 @@ export default function ReferenceEmbeds({ references }: { references: Reference[
   return (
     <div className="space-y-4">
       {videos.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {videos.map((r, i) => (
             <YouTubeEmbed key={`v-${i}`} id={youtubeId(r.url)!} title={r.title} />
           ))}
         </div>
       )}
       {rest.length > 0 && (
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {rest.map((r, i) => {
             const repo = repoInfo(r.url)
             return repo ? (

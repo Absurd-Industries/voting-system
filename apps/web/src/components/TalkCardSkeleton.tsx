@@ -19,7 +19,7 @@ export default function TalkCardSkeleton({ withActions = false }: { withActions?
 /** A grid of talk-card placeholders. */
 export function TalkGridSkeleton({ count = 6, withActions = false }: { count?: number; withActions?: boolean }) {
   return (
-    <div className="card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3" role="status" aria-label="Loading talks">
+    <div className="card-grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" role="status" aria-label="Loading talks">
       {Array.from({ length: count }, (_, i) => (
         <TalkCardSkeleton key={i} withActions={withActions} />
       ))}

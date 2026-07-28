@@ -14,6 +14,16 @@
        to auto-darken it (Chromium Auto Dark Theme on Android). */
     color-scheme: only light;
   }
+  /* Nothing on this site should scroll sideways. `clip` (not `hidden`) keeps
+     the sticky header working, since it makes no scroll container. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+  /* Long URLs and IDs wrap instead of stretching their container. */
+  body {
+    overflow-wrap: break-word;
+  }
   body {
     @apply text-ink font-sans;
     background-color: #d4b896;
@@ -340,7 +350,20 @@
   }
 
   /* ---- Markdown prose (rich CFP view) ---------------------------------- */
-  .kp-prose { @apply text-sm leading-7 text-ink-light; }
+  /* Scraped CFP markdown carries raw URLs; break them rather than let them
+     push the modal into a horizontal scroll. */
+  .kp-prose {
+    @apply text-sm leading-7 text-ink-light;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .kp-prose pre {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .kp-prose img,
+  .kp-prose table { max-width: 100%; }
   .kp-prose h1, .kp-prose h2, .kp-prose h3 {
     @apply mb-2 mt-5 font-serif font-bold text-ink first:mt-0;
     font-size: 1rem;
