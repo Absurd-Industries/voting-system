@@ -10,6 +10,9 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    /* The kraft palette is light by design. "only light" tells the browser not
+       to auto-darken it (Chromium Auto Dark Theme on Android). */
+    color-scheme: only light;
   }
   body {
     @apply text-ink font-sans;
