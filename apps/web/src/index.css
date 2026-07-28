@@ -298,6 +298,21 @@
   .nav-link:hover { color: #ff5900; }
   .nav-link-active { color: #ff5900; background: rgba(250, 243, 232, 0.7); }
 
+  /* Scrollable rows that should not paint a scrollbar (mobile nav, carousels) */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* Loading placeholder blocks. The global prefers-reduced-motion rule
+     already stops the pulse for users who ask for less motion. */
+  .skeleton {
+    background: rgba(74, 61, 47, 0.13);
+    border-radius: 0.5rem;
+    animation: skeleton-pulse 1.4s ease-in-out infinite;
+  }
+
   /* Decorative label — muted, never orange */
   .stamp-label {
     @apply inline-flex items-center gap-2 font-sans font-bold uppercase;
@@ -357,6 +372,10 @@
 @keyframes modal-pop {
   from { opacity: 0; transform: scale(0.96) translateY(8px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 @keyframes vote-pulse {
   0% { transform: scale(1); }

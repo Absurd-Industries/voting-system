@@ -18,7 +18,7 @@ interface CurrentUser {
 
 function NavItem({ to, label, active }: { to: string; label: string; active: boolean }) {
   return (
-    <Link to={to} className={`nav-link ${active ? 'nav-link-active' : ''}`}>
+    <Link to={to} className={`nav-link shrink-0 ${active ? 'nav-link-active' : ''}`}>
       {label}
     </Link>
   )
@@ -53,9 +53,12 @@ function AuthenticatedApp() {
   if (!isLoaded) return null
 
   if (!isSignedIn) {
+    // Return the visitor to the page they were trying to reach (e.g. /vote)
+    // instead of Clerk's default landing target.
+    const returnTo = location.pathname + location.search
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <SignIn routing="hash" />
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <SignIn routing="hash" forceRedirectUrl={returnTo} signUpForceRedirectUrl={returnTo} />
       </div>
     )
   }
@@ -76,10 +79,15 @@ function AuthenticatedApp() {
       <nav className="sticky top-0 z-40 border-b border-ink/10 bg-kraft/85 backdrop-blur-md backdrop-saturate-150">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <Link to="/" className="group flex shrink-0 items-center gap-2 font-serif text-base font-bold text-ink">
-              <i className="ph-bold ph-cpu text-ink transition-colors group-hover:text-stamp" aria-hidden="true" /> Hardware Devroom
+            <Link
+              to="/"
+              className="group flex shrink-0 items-center gap-2 font-serif text-base font-bold text-ink"
+              aria-label="Hardware Devroom home"
+            >
+              <i className="ph-bold ph-cpu text-lg text-ink transition-colors group-hover:text-stamp" aria-hidden="true" />
+              <span className="hidden sm:inline">Hardware Devroom</span>
             </Link>
-            <div className="flex gap-0.5 overflow-x-auto">
+            <div className="scrollbar-hide flex min-w-0 gap-0.5 overflow-x-auto">
               <NavItem to="/vote" label="Vote" active={pathname === '/vote'} />
               {isAdmin && (
                 <>
