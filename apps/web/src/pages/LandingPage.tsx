@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../lib/api.js'
+import { useAuth } from '../lib/auth.js'
 import { formatDuration } from '../lib/time.js'
 import TalkDetailModal, { type TalkDetail } from '../components/TalkDetailModal.js'
+import { TalkGridSkeleton } from '../components/TalkCardSkeleton.js'
 
 /* ------------------------------------------------------------------ data --- */
 
@@ -73,7 +75,7 @@ type PhaseStatus = 'done' | 'active' | 'upcoming'
 const ROAD: { title: string; blurb: string; status: PhaseStatus; icon: string }[] = [
   { title: 'Call for Proposals', blurb: '33 proposals received from the community', status: 'done', icon: 'ph-paper-plane-tilt' },
   { title: 'Community Voting', blurb: 'Your votes pick the schedule', status: 'active', icon: 'ph-check-square' },
-  { title: 'Schedule Reveal', blurb: 'The community-voted lineup, out 1 Sep', status: 'upcoming', icon: 'ph-calendar-heart' },
+  { title: 'Schedule Reveal', blurb: 'The community-voted lineup, out 20 Aug', status: 'upcoming', icon: 'ph-calendar-heart' },
   { title: 'Hardware Showcase', blurb: 'Real builds, on real tables', status: 'upcoming', icon: 'ph-flask' },
   { title: 'The Devroom', blurb: 'Two days at IndiaFOSS, Bengaluru', status: 'upcoming', icon: 'ph-flag-banner-fold' },
 ]
@@ -142,7 +144,7 @@ export default function LandingPage() {
   const [filter, setFilter] = useState('All')
   const [now, setNow] = useState(Date.now())
 
-  const { data: talks = [] } = useQuery({
+  const { data: talks = [], isLoading: talksLoading } = useQuery({
     queryKey: ['talks-archive'],
     queryFn: () => apiFetch<TalkDetail[]>('/api/talks/archive'),
   })
@@ -151,6 +153,16 @@ export default function LandingPage() {
     queryKey: ['conference-public'],
     queryFn: () => apiFetch<ConferencePublic>('/api/conference'),
     retry: 1,
+  })
+
+  // A signed-in visitor who has spent their ballot gets "change your votes"
+  // wording instead of another ask.
+  const { isSignedIn } = useAuth()
+  const { data: myVotes } = useQuery({
+    queryKey: ['my-votes'],
+    queryFn: () => apiFetch<{ votes: string[]; votes_per_voter: number }>('/api/votes/mine'),
+    enabled: Boolean(isSignedIn) && conference?.voting_status === 'open',
+    retry: false,
   })
 
   useEffect(() => {
@@ -164,6 +176,10 @@ export default function LandingPage() {
     votingOpen && conference?.voting_closes_at && conference.voting_closes_at > now + serverOffset
       ? formatDuration(conference.voting_closes_at - (now + serverOffset))
       : null
+
+  const votesTotal = myVotes?.votes_per_voter ?? 0
+  const hasVotedAll = votesTotal > 0 && (myVotes?.votes.length ?? 0) >= votesTotal
+  const voteCtaLabel = hasVotedAll ? 'Change your votes' : 'Vote on Talks'
 
   const daysToGo = Math.max(0, Math.ceil((EVENT_START - now) / DAY_MS))
   const speakerCount = useMemo(() => new Set(talks.flatMap((t) => t.presenter_name ? [t.presenter_name] : [])).size, [talks])
@@ -227,12 +243,18 @@ export default function LandingPage() {
               <p className="mt-7 max-w-xl text-base leading-relaxed text-ink-light sm:text-lg">
                 {talks.length > 0 ? `${talks.length} talks` : 'Talks'} submitted by India's open hardware
                 community. Two days of demos, war stories, and first builds.
-                {votingOpen && <strong className="text-ink"> Right now - your votes pick the schedule.</strong>}
+                {votingOpen && (
+                  <strong className="text-ink">
+                    {hasVotedAll
+                      ? ' Your votes are in - you can change them any time before voting closes.'
+                      : ' Right now - your votes pick the schedule.'}
+                  </strong>
+                )}
               </p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 {votingOpen && (
-                  <Link to="/vote" className="btn btn-stamp">
-                    <i className="ph-bold ph-check-square" aria-hidden="true" /> Vote on Talks
+                  <Link to="/vote" className={`btn ${hasVotedAll ? 'btn-outline' : 'btn-stamp'}`}>
+                    <i className={`ph-bold ${hasVotedAll ? 'ph-pencil-simple' : 'ph-check-square'}`} aria-hidden="true" /> {voteCtaLabel}
                   </Link>
                 )}
                 <a href="#talks" className="btn btn-outline">
@@ -317,11 +339,13 @@ export default function LandingPage() {
         {votingOpen && (
           <div className="mt-6 flex flex-col items-start justify-between gap-3 rounded-xl bg-ink px-5 py-4 text-paper sm:flex-row sm:items-center">
             <p className="flex items-center gap-2 text-sm font-semibold">
-              <i className="ph-fill ph-megaphone text-lg" aria-hidden="true" />
-              These talks need your votes{closesIn ? ` - voting closes in ${closesIn}` : ''}.
+              <i className={`ph-fill ${hasVotedAll ? 'ph-check-circle' : 'ph-megaphone'} text-lg`} aria-hidden="true" />
+              {hasVotedAll
+                ? `Your votes are in. You can change them${closesIn ? ` until voting closes in ${closesIn}` : ' until voting closes'}.`
+                : `These talks need your votes${closesIn ? ` - voting closes in ${closesIn}` : ''}.`}
             </p>
             <Link to="/vote" className="btn btn-stamp btn-sm shrink-0">
-              <i className="ph-bold ph-check-square" aria-hidden="true" /> Vote on Talks
+              <i className={`ph-bold ${hasVotedAll ? 'ph-pencil-simple' : 'ph-check-square'}`} aria-hidden="true" /> {voteCtaLabel}
             </Link>
           </div>
         )}
@@ -367,7 +391,13 @@ export default function LandingPage() {
             </button>
           ))}
         </div>
-        {talks.length === 0 && (
+        {talksLoading && (
+          <div className="mt-6">
+            <TalkGridSkeleton count={6} />
+          </div>
+        )}
+
+        {!talksLoading && talks.length === 0 && (
           <div className="empty-state mt-6">
             <i className="ph-bold ph-cardboard-box text-3xl opacity-50" aria-hidden="true" />
             <p className="font-serif text-lg font-bold text-ink">The archive is warming up</p>
@@ -545,7 +575,7 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm">
                 {[
                   { icon: 'ph-archive', label: 'Browse the Talks', href: '#talks', anchor: true },
-                  { icon: 'ph-check-square', label: 'Vote on Talks', href: '/vote', internal: true },
+                  { icon: hasVotedAll ? 'ph-pencil-simple' : 'ph-check-square', label: voteCtaLabel, href: '/vote', internal: true },
                   { icon: 'ph-ticket', label: 'Get Tickets', href: TICKETS_URL },
                   { icon: 'ph-discord-logo', label: 'Discord', href: DISCORD_URL },
                 ].map((l) => (

@@ -1,9 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
 import { formatDateTime, formatDuration } from '../lib/time.js'
 import { createVisitTalkOrder } from '../lib/talk-order.js'
 import TalkDetailModal, { type TalkDetail } from '../components/TalkDetailModal.js'
+import VoteCompleteModal from '../components/VoteCompleteModal.js'
+import { TalkGridSkeleton } from '../components/TalkCardSkeleton.js'
 
 interface Conference {
   id: string
@@ -35,8 +38,13 @@ function useNow(intervalMs = 1000) {
 export default function VotePage() {
   const qc = useQueryClient()
   const now = useNow()
+  const navigate = useNavigate()
   const [detailTalk, setDetailTalk] = useState<Talk | null>(null)
   const [filter, setFilter] = useState<string>('All')
+  const [justCompleted, setJustCompleted] = useState(false)
+  // Stable: this page re-renders every second (countdown), and an unstable
+  // callback would keep restarting the modal's redirect timer.
+  const goHome = useCallback(() => navigate('/'), [navigate])
 
   const { data: conference, isLoading: confLoading } = useQuery({
     queryKey: ['conference'],
@@ -67,7 +75,12 @@ export default function VotePage() {
 
   const castVote = useMutation({
     mutationFn: (talkId: string) => apiFetch(`/api/votes/${talkId}`, { method: 'POST' }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['my-votes'] }),
+    onSuccess: () => {
+      // `votesUsed` is still the pre-cast count here, so this fires only on the
+      // transition into a full ballot - not on every visit once it's full.
+      if (votesTotal > 0 && votesUsed + 1 >= votesTotal) setJustCompleted(true)
+      qc.invalidateQueries({ queryKey: ['my-votes'] })
+    },
   })
   const retractVote = useMutation({
     mutationFn: (talkId: string) => apiFetch(`/api/votes/${talkId}`, { method: 'DELETE' }),
@@ -108,7 +121,20 @@ export default function VotePage() {
   const visibleTalks = filter === 'All' ? orderedTalks : orderedTalks.filter((t) => t.talk_type === filter)
 
   if (confLoading || talksLoading) {
-    return <div className="py-16 text-center text-sm text-ink-faint">Loading…</div>
+    return (
+      <div className="space-y-6">
+        <div className="kp-card flex flex-col gap-5 p-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="w-full max-w-2xl">
+            <div className="skeleton h-3 w-32" />
+            <div className="skeleton mt-3 h-9 w-3/4" />
+            <div className="skeleton mt-3 h-4 w-full" />
+          </div>
+          <div className="skeleton h-20 w-full shrink-0 sm:w-44" />
+        </div>
+        <div className="skeleton h-16 w-full" />
+        <TalkGridSkeleton count={6} withActions />
+      </div>
+    )
   }
   if (!conference) {
     return <div className="py-16 text-center text-sm text-ink-faint">No conference configured yet.</div>
@@ -120,6 +146,7 @@ export default function VotePage() {
   const countdownTarget = isOpen ? conference.voting_closes_at : conference.voting_opens_at
   const showCountdown = countdownTarget !== null && countdownTarget > effectiveNow
   const countdownLabel = isOpen ? 'Time left' : 'Opens in'
+  const allVotesUsed = votesTotal > 0 && votesUsed >= votesTotal && !isAdminPreview
 
   return (
     <div className="space-y-6 pb-24 sm:pb-28">
@@ -147,9 +174,16 @@ export default function VotePage() {
       {isOpen ? (
         <div className="status-open">
           <span className="flex items-center gap-1.5 font-semibold">
-            <i className="ph-bold ph-check-circle" aria-hidden="true" /> Voting is open
+            <i className="ph-bold ph-check-circle" aria-hidden="true" />
+            {allVotesUsed ? `All ${votesTotal} votes cast. Thank you!` : 'Voting is open'}
           </span>
-          {votingClosesAt && <p className="mt-1 text-funded/80">Closes {votingClosesAt}</p>}
+          {allVotesUsed ? (
+            <p className="mt-1 text-funded/80">
+              You can change your votes {votingClosesAt ? `until ${votingClosesAt}` : 'until voting closes'}.
+            </p>
+          ) : (
+            votingClosesAt && <p className="mt-1 text-funded/80">Closes {votingClosesAt}</p>
+          )}
           {isAdminPreview && (
             <p className="mt-1 text-funded/80">Admin preview: {votesTotal} votes per voter. Admins cannot cast votes.</p>
           )}
@@ -162,17 +196,6 @@ export default function VotePage() {
           {votingOpensAt && <span> Opens {votingOpensAt}.</span>}
         </div>
       )}
-
-      {/* Rules */}
-      <div className="kp-card p-5 text-sm text-ink-light">
-        <p className="section-title mb-2">How voting works</p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <p>Pick up to {votesTotal} talks you want to see. You do not need to use every vote.</p>
-          <p>You can change your selections until voting closes.</p>
-          <p>Talk order reshuffles each visit; talks you've voted for stay pinned on top.</p>
-          <p>Results stay hidden until organizers publish the final ranked list.</p>
-        </div>
-      </div>
 
       {(castVote.error || retractVote.error) && (
         <div className="status-error" role="alert">
@@ -283,8 +306,19 @@ export default function VotePage() {
           <div className="progress mt-2" aria-hidden="true">
             <div className="progress-fill hot" style={{ width: `${votesTotal > 0 ? (votesUsed / votesTotal) * 100 : 0}%` }} />
           </div>
-          <p className="mt-1.5 text-xs text-ink-faint">{Math.max(0, votesTotal - votesUsed)} remaining</p>
+          <p className="mt-1.5 text-xs text-ink-faint">
+            {allVotesUsed ? 'Change them any time before the deadline' : `${Math.max(0, votesTotal - votesUsed)} remaining`}
+          </p>
         </aside>
+      )}
+
+      {justCompleted && (
+        <VoteCompleteModal
+          votesTotal={votesTotal}
+          deadline={votingClosesAt}
+          onGoHome={goHome}
+          onStay={() => setJustCompleted(false)}
+        />
       )}
     </div>
   )
