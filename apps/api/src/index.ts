@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import { cors } from 'hono/cors'
 import authRoutes from './routes/auth.js'
 import conferenceRoutes from './routes/conference.js'
 import voteRoutes from './routes/votes.js'
@@ -11,6 +10,7 @@ import adminTalksRoutes from './routes/admin/talks.js'
 import adminResultsRoutes from './routes/admin/results.js'
 import adminUsersRoutes from './routes/admin/users.js'
 import adminAuditRoutes from './routes/admin/audit.js'
+import { parseAllowedOrigins } from './lib/allowed-origins.js'
 
 export type Bindings = {
   DB: D1Database
@@ -30,8 +30,26 @@ export type Variables = {
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
 app.use('*', async (c, next) => {
-  const handler = cors({ origin: c.env.ALLOWED_ORIGIN, credentials: true })
-  return handler(c, next)
+  const origin = c.req.header('Origin') ?? ''
+  const allowedOrigins = parseAllowedOrigins(c.env.ALLOWED_ORIGIN)
+  const isAllowedOrigin = allowedOrigins.includes(origin)
+  const requestedHeaders = c.req.header('Access-Control-Request-Headers')
+
+  if (c.req.method === 'OPTIONS') {
+    const headers = new Headers({
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Allow-Methods': 'GET,HEAD,PUT,POST,DELETE,PATCH',
+      'Vary': 'Origin, Access-Control-Request-Headers',
+    })
+    if (isAllowedOrigin) headers.set('Access-Control-Allow-Origin', origin)
+    if (requestedHeaders) headers.set('Access-Control-Allow-Headers', requestedHeaders)
+    return new Response(null, { status: 204, headers })
+  }
+
+  await next()
+  if (isAllowedOrigin) c.header('Access-Control-Allow-Origin', origin)
+  c.header('Access-Control-Allow-Credentials', 'true')
+  c.header('Vary', 'Origin', { append: true })
 })
 
 app.get('/api/health', (c) => c.json({ ok: true }))

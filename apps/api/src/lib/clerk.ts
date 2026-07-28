@@ -1,5 +1,6 @@
 import { createClerkClient } from '@clerk/backend'
 import type { Bindings } from '../index.js'
+import { parseAllowedOrigins } from './allowed-origins.js'
 
 // Returns the Clerk user ID from the request, or null if unauthenticated.
 // Uses authenticateRequest — Clerk's officially recommended method for Workers.
@@ -19,7 +20,7 @@ export async function getClerkUserId(
     const state = await clerk.authenticateRequest(request, {
       secretKey: env.CLERK_SECRET_KEY,
       publishableKey: env.CLERK_PUBLISHABLE_KEY,
-      authorizedParties: [env.ALLOWED_ORIGIN],
+      authorizedParties: parseAllowedOrigins(env.ALLOWED_ORIGIN),
     })
 
     if (!state.isSignedIn) return null
