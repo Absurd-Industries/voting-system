@@ -1,5 +1,5 @@
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom'
-import { SignIn, ClerkLoaded, UserButton, useAuth } from './lib/auth.js'
+import { SignIn, UserButton, useAuth } from './lib/auth.js'
 import { useQuery } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import { apiFetch, initApiAuth } from './lib/api.js'
@@ -24,13 +24,27 @@ function NavItem({ to, label, active }: { to: string; label: string; active: boo
   )
 }
 
-function AuthenticatedApp() {
-  const { isSignedIn, isLoaded, getToken } = useAuth()
-  const location = useLocation()
+/** Shell placeholder while Clerk boots, so protected routes never flash blank. */
+function AppShellLoading() {
+  return (
+    <div className="min-h-screen text-ink">
+      <nav className="sticky top-0 z-40 border-b border-ink/10 bg-kraft/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-2.5 sm:px-6">
+          <i className="ph-bold ph-cpu text-lg text-ink" aria-hidden="true" />
+          <span className="hidden font-serif text-base font-bold text-ink sm:inline">Hardware Devroom</span>
+        </div>
+      </nav>
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6" role="status" aria-label="Loading">
+        <div className="skeleton h-32 w-full" />
+        <div className="skeleton mt-6 h-16 w-full" />
+      </main>
+    </div>
+  )
+}
 
-  // Store getToken callback synchronously so apiFetch always has it
-  // before any React Query queryFns fire
-  initApiAuth(getToken)
+function AuthenticatedApp() {
+  const { isSignedIn, isLoaded } = useAuth()
+  const location = useLocation()
 
   const { data: currentUser, isLoading: isUserLoading } = useQuery({
     queryKey: ['auth-me'],
@@ -42,15 +56,7 @@ function AuthenticatedApp() {
     retry: 1,
   })
 
-  // Standalone public pages (no app shell)
-  if (location.pathname === '/') {
-    return <LandingPage />
-  }
-  if (location.pathname === '/results') {
-    return <PublicResultsPage />
-  }
-
-  if (!isLoaded) return null
+  if (!isLoaded) return <AppShellLoading />
 
   if (!isSignedIn) {
     // Return the visitor to the page they were trying to reach (e.g. /vote)
@@ -133,9 +139,17 @@ function ForbiddenPage() {
 }
 
 export default function App() {
-  return (
-    <ClerkLoaded>
-      <AuthenticatedApp />
-    </ClerkLoaded>
-  )
+  const { getToken } = useAuth()
+  const location = useLocation()
+
+  // Keep the token getter current for every apiFetch (public pages included);
+  // must run before any React Query queryFn fires.
+  initApiAuth(getToken)
+
+  // Public pages paint immediately - they must not wait on Clerk's remote
+  // script, otherwise every visitor gets a blank page while it loads.
+  if (location.pathname === '/') return <LandingPage />
+  if (location.pathname === '/results') return <PublicResultsPage />
+
+  return <AuthenticatedApp />
 }
