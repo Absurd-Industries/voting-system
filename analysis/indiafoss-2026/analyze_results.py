@@ -160,24 +160,65 @@ def draw_results_chart(
     title: str,
     *,
     compact: bool,
+    dark: bool,
 ) -> None:
+    palette = (
+        {
+            "background": "#18181b",
+            "foreground": "#e4e4e7",
+            "muted": "#a1a1aa",
+            "grid": "#3f3f46",
+            "highlight": "#2dd4bf",
+            "bar": "#52525b",
+        }
+        if dark
+        else {
+            "background": "#ffffff",
+            "foreground": "#27272a",
+            "muted": "#52525b",
+            "grid": "#e4e4e7",
+            "highlight": "#14b8a6",
+            "bar": "#71717a",
+        }
+    )
     labels = [wrapped_title(talk["title"], 46 if compact else 58) for talk in talks]
     values = [talk["vote_count"] for talk in talks]
     height = max(7, len(talks) * (0.58 if compact else 0.48) + 2.2)
     fig, ax = plt.subplots(figsize=(15, height))
-    colors = ["#d45535" if talk["rank"] <= 6 else "#314b5f" for talk in talks]
+    colors = [palette["highlight"] if talk["rank"] <= 6 else palette["bar"] for talk in talks]
     bars = ax.barh(labels, values, color=colors)
     ax.invert_yaxis()
-    ax.set_title(title, loc="left", fontsize=20, fontweight="bold", pad=18)
-    ax.set_xlabel("Community votes")
+    ax.set_title(
+        title,
+        loc="left",
+        fontsize=20,
+        fontweight="bold",
+        pad=18,
+        color=palette["foreground"],
+    )
+    ax.set_xlabel("Community votes", color=palette["muted"])
     ax.set_xlim(0, max(values) + 2.5)
-    ax.xaxis.grid(True, color="#d9d3c7", linewidth=0.8)
+    ax.xaxis.grid(True, color=palette["grid"], linewidth=0.8)
     ax.set_axisbelow(True)
     ax.spines[["top", "right", "left"]].set_visible(False)
-    ax.tick_params(axis="y", length=0, labelsize=10 if compact else 9)
-    ax.bar_label(bars, labels=[str(value) for value in values], padding=5, fontsize=10, fontweight="bold")
-    fig.patch.set_facecolor("#f7f2e8")
-    ax.set_facecolor("#f7f2e8")
+    ax.spines["bottom"].set_color(palette["grid"])
+    ax.tick_params(
+        axis="y",
+        length=0,
+        labelsize=10 if compact else 9,
+        colors=palette["foreground"],
+    )
+    ax.tick_params(axis="x", colors=palette["muted"])
+    ax.bar_label(
+        bars,
+        labels=[str(value) for value in values],
+        padding=5,
+        fontsize=10,
+        fontweight="bold",
+        color=palette["foreground"],
+    )
+    fig.patch.set_facecolor(palette["background"])
+    ax.set_facecolor(palette["background"])
     fig.tight_layout()
     fig.savefig(output_path, dpi=180, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -199,11 +240,23 @@ def draw_terminal_output(report: str, output_path: Path, line_limit: int = 20) -
     ax.text(
         0.035,
         0.96,
-        "$ python3 analyze_results.py results-2026.json\n\n" + shown_report,
+        "$ python3 analyze_results.py results-2026.json",
         transform=ax.transAxes,
         va="top",
         ha="left",
-        color="#e6edf3",
+        color="#2dd4bf",
+        family="monospace",
+        fontsize=11.5,
+        linespacing=1.35,
+    )
+    ax.text(
+        0.035,
+        0.89,
+        shown_report,
+        transform=ax.transAxes,
+        va="top",
+        ha="left",
+        color="#e4e4e7",
         family="monospace",
         fontsize=11.5,
         linespacing=1.35,
@@ -243,12 +296,28 @@ def main(argv: list[str] | None = None) -> int:
         args.output_dir / "talk_votes_all_chart.png",
         f"All proposals — {conference['name']}",
         compact=False,
+        dark=False,
+    )
+    draw_results_chart(
+        talks,
+        args.output_dir / "talk_votes_all_chart_dark.png",
+        f"All proposals — {conference['name']}",
+        compact=False,
+        dark=True,
     )
     draw_results_chart(
         talks[: args.top],
         args.output_dir / "talk_votes_top_chart.png",
         f"Top {min(args.top, len(talks))} proposals — {conference['name']}",
         compact=True,
+        dark=False,
+    )
+    draw_results_chart(
+        talks[: args.top],
+        args.output_dir / "talk_votes_top_chart_dark.png",
+        f"Top {min(args.top, len(talks))} proposals — {conference['name']}",
+        compact=True,
+        dark=True,
     )
     draw_terminal_output(report, args.output_dir / "terminal_output.png")
     return 0

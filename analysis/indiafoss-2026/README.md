@@ -19,8 +19,12 @@ The command validates the aggregate totals, prints the complete ranked result, a
 
 - `talk_vote_counts.csv`
 - `talk_votes_all_chart.png`
+- `talk_votes_all_chart_dark.png`
 - `talk_votes_top_chart.png`
+- `talk_votes_top_chart_dark.png`
 - `terminal_output.png`
+
+The standard chart files use the light `balubabu.dev` palette. The `_dark` variants use its dark-mode palette. Leading proposals are highlighted with the site's teal accent; the remaining proposals use neutral zinc tones.
 
 Talks with equal vote totals share a rank. The next rank follows competition-ranking rules, so two talks tied at rank 2 are followed by rank 4.
 

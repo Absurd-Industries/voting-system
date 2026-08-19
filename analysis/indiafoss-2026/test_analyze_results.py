@@ -68,7 +68,9 @@ class AnalyzeResultsCliTest(unittest.TestCase):
         )
         for filename in (
             "talk_votes_all_chart.png",
+            "talk_votes_all_chart_dark.png",
             "talk_votes_top_chart.png",
+            "talk_votes_top_chart_dark.png",
             "terminal_output.png",
         ):
             path = output_dir / filename
