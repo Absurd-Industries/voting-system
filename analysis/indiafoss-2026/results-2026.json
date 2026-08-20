@@ -1,0 +1,191 @@
+{
+  "conference": {
+    "name": "Open Hardware Devroom 2026",
+    "votes_per_voter": 9,
+    "ballot_talk_count": 35,
+    "voting_closed_at": "2026-08-10T00:00:00+05:30"
+  },
+  "stats": {
+    "eligible_voters": 53,
+    "participating_voters": 48,
+    "total_votes": 262,
+    "eligible_voters_note": "Voter accounts created on or before the voting cutoff. Accounts created after voting closed are excluded."
+  },
+  "talks": [
+    {
+      "title": "Minnow: An Open Platform for Ground Swarm Robotics",
+      "presenter_name": "Balu Babu",
+      "vote_count": 17
+    },
+    {
+      "title": "Build your own open source keyboard with ZMK/QMK",
+      "presenter_name": "Advait Dhamorikar",
+      "vote_count": 16
+    },
+    {
+      "title": "Holding It Together: A Talk About Screws",
+      "presenter_name": "Balu Babu",
+      "vote_count": 16
+    },
+    {
+      "title": "Building Open Source Music Hardware in India - Tarab Instruments",
+      "presenter_name": "Syed Ali",
+      "vote_count": 14
+    },
+    {
+      "title": "CNC4Everyone - How we built a CNC machine for every classroom, college and makerspace",
+      "presenter_name": "Nikhil Nair, Ashish Joy, Akash Edamana",
+      "vote_count": 14
+    },
+    {
+      "title": "My zero-to-hero journey deploying a fiber-optic and wireless community mesh",
+      "presenter_name": "Kiran Jonnalagadda",
+      "vote_count": 13
+    },
+    {
+      "title": "Automate your home without selling it to corpos",
+      "presenter_name": "Venkatesh Chaturvedi",
+      "vote_count": 10
+    },
+    {
+      "title": "Creating a customizable e-paper dashboard",
+      "presenter_name": "Ayaskant Panigrahi",
+      "vote_count": 10
+    },
+    {
+      "title": "HackerFab IITB: democratizing semiconductor fabrication",
+      "presenter_name": "Jai Bellare",
+      "vote_count": 10
+    },
+    {
+      "title": "Introduction to Physical AI: Getting Started with Intelligent Robots",
+      "presenter_name": "Vinay, Kiara Bhandari",
+      "vote_count": 10
+    },
+    {
+      "title": "JASPER: Open-Source Spectroscopy for Everyday Science",
+      "presenter_name": "Tony Francis",
+      "vote_count": 9
+    },
+    {
+      "title": "KiCAD-Prism: Self-Hosted Hardware Collaboration Workflow for Startups and Student Teams",
+      "presenter_name": "Krishna Swaroop Dhulipalla",
+      "vote_count": 9
+    },
+    {
+      "title": "Bye bye datasheets, Hello HardwareLib",
+      "presenter_name": "Nilesh Trivedi",
+      "vote_count": 8
+    },
+    {
+      "title": "Design once, reuse everywhere : Modular Electronics in Practice",
+      "presenter_name": "Srinivasan M",
+      "vote_count": 8
+    },
+    {
+      "title": "Entering into a world of FPGAs with 4$ fully open source shrike-lite and shrikeFi",
+      "presenter_name": "Akshar Vastarpara",
+      "vote_count": 8
+    },
+    {
+      "title": "Hackable Cat Toys: What Open Projects Can Learn from Designing for Cats",
+      "presenter_name": "Ruby Paulson",
+      "vote_count": 8
+    },
+    {
+      "title": "Breaking Into Chip Design: Building a Digital Design Workflow with Open-Source Tools",
+      "presenter_name": "Abhijna Laxmi",
+      "vote_count": 7
+    },
+    {
+      "title": "React is not just for the Web: Running React on an ESP32 Microcontroller",
+      "presenter_name": "Pratham Vaidya",
+      "vote_count": 7
+    },
+    {
+      "title": "Why Most Chip Ideas Never Become Products: The Missing Journey from RTL to Reality",
+      "presenter_name": "AASHISH NIRANJAN BARATHYKANNAN",
+      "vote_count": 7
+    },
+    {
+      "title": "Building an Open Maritime SAR Perception Stack on RK3588 Edge Hardware",
+      "presenter_name": "Rupankar Majumdar",
+      "vote_count": 6
+    },
+    {
+      "title": "Haptics with Open Source: From Vision to Touch",
+      "presenter_name": "Ravikanth Dadi",
+      "vote_count": 6
+    },
+    {
+      "title": "Hardware Trojan - Why did it not let me sleep",
+      "presenter_name": "Rio Roy",
+      "vote_count": 6
+    },
+    {
+      "title": "Lessons Learned from a hardware prototype/weekend project that tried to turn into a product",
+      "presenter_name": "Souhrud Reddy",
+      "vote_count": 6
+    },
+    {
+      "title": "Nia: My First Badge",
+      "presenter_name": "Sayyad Abid",
+      "vote_count": 5
+    },
+    {
+      "title": "Building a tiny FPGA accelerator with FOSS tooling",
+      "presenter_name": "Amandeep Singh",
+      "vote_count": 4
+    },
+    {
+      "title": "Designing an Open-Source Product for Play",
+      "presenter_name": "Ruby Paulson",
+      "vote_count": 4
+    },
+    {
+      "title": "Dev Wallet: An Open Hardware Wallet Built with Rust",
+      "presenter_name": "prowork out",
+      "vote_count": 4
+    },
+    {
+      "title": "Migrating from SW to Clinical grade HW: An Open MVDR Beamformer",
+      "presenter_name": "Athi Ram R S",
+      "vote_count": 4
+    },
+    {
+      "title": "OAQ : An Air Quality Monitoring system made for community",
+      "presenter_name": "Bhuvan Makes",
+      "vote_count": 4
+    },
+    {
+      "title": "Building at the Edge: Combining Open Hardware and ML in Student Projects",
+      "presenter_name": "Saurabh Patil",
+      "vote_count": 3
+    },
+    {
+      "title": "Open Hardware for Climate Resilience: From Rain Gauges to Flood Early Warning",
+      "presenter_name": "Dr. Sunil Thomas Thonikuzhiyil",
+      "vote_count": 3
+    },
+    {
+      "title": "Budget Macropad",
+      "presenter_name": "Sahaj Sarup",
+      "vote_count": 2
+    },
+    {
+      "title": "eSim: An Open Source EDA with a vision of Simulation to GDS II",
+      "presenter_name": "Sumanto Kar",
+      "vote_count": 2
+    },
+    {
+      "title": "IoT enabling Smart Panchayats: A Control, Communication, and Computing Ecosystem for Sustainable Development Goals",
+      "presenter_name": "Shafeek P M, Gopika TG",
+      "vote_count": 2
+    },
+    {
+      "title": "Open Source Scientific Harware for Citizen Science",
+      "presenter_name": "Balaji Muthusubramanian",
+      "vote_count": 0
+    }
+  ]
+}

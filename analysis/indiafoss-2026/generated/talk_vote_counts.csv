@@ -1,0 +1,36 @@
+rank,title,presenter_name,vote_count
+1,Minnow: An Open Platform for Ground Swarm Robotics,Balu Babu,17
+2,Build your own open source keyboard with ZMK/QMK,Advait Dhamorikar,16
+2,Holding It Together: A Talk About Screws,Balu Babu,16
+4,Building Open Source Music Hardware in India - Tarab Instruments,Syed Ali,14
+4,"CNC4Everyone - How we built a CNC machine for every classroom, college and makerspace","Nikhil Nair, Ashish Joy, Akash Edamana",14
+6,My zero-to-hero journey deploying a fiber-optic and wireless community mesh,Kiran Jonnalagadda,13
+7,Automate your home without selling it to corpos,Venkatesh Chaturvedi,10
+7,Creating a customizable e-paper dashboard,Ayaskant Panigrahi,10
+7,HackerFab IITB: democratizing semiconductor fabrication,Jai Bellare,10
+7,Introduction to Physical AI: Getting Started with Intelligent Robots,"Vinay, Kiara Bhandari",10
+11,JASPER: Open-Source Spectroscopy for Everyday Science,Tony Francis,9
+11,KiCAD-Prism: Self-Hosted Hardware Collaboration Workflow for Startups and Student Teams,Krishna Swaroop Dhulipalla,9
+13,"Bye bye datasheets, Hello HardwareLib",Nilesh Trivedi,8
+13,"Design once, reuse everywhere : Modular Electronics in Practice",Srinivasan M,8
+13,Entering into a world of FPGAs with 4$ fully open source shrike-lite and shrikeFi,Akshar Vastarpara,8
+13,Hackable Cat Toys: What Open Projects Can Learn from Designing for Cats,Ruby Paulson,8
+17,Breaking Into Chip Design: Building a Digital Design Workflow with Open-Source Tools,Abhijna Laxmi,7
+17,React is not just for the Web: Running React on an ESP32 Microcontroller,Pratham Vaidya,7
+17,Why Most Chip Ideas Never Become Products: The Missing Journey from RTL to Reality,AASHISH NIRANJAN BARATHYKANNAN,7
+20,Building an Open Maritime SAR Perception Stack on RK3588 Edge Hardware,Rupankar Majumdar,6
+20,Haptics with Open Source: From Vision to Touch,Ravikanth Dadi,6
+20,Hardware Trojan - Why did it not let me sleep,Rio Roy,6
+20,Lessons Learned from a hardware prototype/weekend project that tried to turn into a product,Souhrud Reddy,6
+24,Nia: My First Badge,Sayyad Abid,5
+25,Building a tiny FPGA accelerator with FOSS tooling,Amandeep Singh,4
+25,Designing an Open-Source Product for Play,Ruby Paulson,4
+25,Dev Wallet: An Open Hardware Wallet Built with Rust,prowork out,4
+25,Migrating from SW to Clinical grade HW: An Open MVDR Beamformer,Athi Ram R S,4
+25,OAQ : An Air Quality Monitoring system made for community,Bhuvan Makes,4
+30,Building at the Edge: Combining Open Hardware and ML in Student Projects,Saurabh Patil,3
+30,Open Hardware for Climate Resilience: From Rain Gauges to Flood Early Warning,Dr. Sunil Thomas Thonikuzhiyil,3
+32,Budget Macropad,Sahaj Sarup,2
+32,eSim: An Open Source EDA with a vision of Simulation to GDS II,Sumanto Kar,2
+32,"IoT enabling Smart Panchayats: A Control, Communication, and Computing Ecosystem for Sustainable Development Goals","Shafeek P M, Gopika TG",2
+35,Open Source Scientific Harware for Citizen Science,Balaji Muthusubramanian,0

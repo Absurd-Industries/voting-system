@@ -263,6 +263,10 @@ npx tsc -p apps/api/tsconfig.json --noEmit
 npm -w apps/web run build
 ```
 
+## Published Election Analysis
+
+The privacy-safe aggregate results and reproducible analysis for the IndiaFOSS 2026 Open Hardware Devroom are in [`analysis/indiafoss-2026`](analysis/indiafoss-2026/README.md).
+
 ## Deployment Notes
 
 Production runs entirely on Cloudflare:
