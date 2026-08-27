@@ -94,7 +94,9 @@ function AuthenticatedApp() {
               <span className="hidden sm:inline">Hardware Devroom</span>
             </Link>
             <div className="scrollbar-hide flex min-w-0 gap-0.5 overflow-x-auto">
-              <NavItem to="/vote" label="Vote" active={pathname === '/vote'} />
+              {/* Voting is closed for 2026. The /vote route and VotePage stay as
+                  scaffolding - restore this NavItem when next season opens:
+                  <NavItem to="/vote" label="Vote" active={pathname === '/vote'} /> */}
               {isAdmin && (
                 <>
                   <NavItem to="/admin/conference" label="Conference" active={pathname === '/admin/conference'} />
