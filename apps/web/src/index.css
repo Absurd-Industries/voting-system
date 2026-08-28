@@ -349,6 +349,24 @@
     outline-offset: 4px;
   }
 
+  /* ---- FAQ accordions (native details) ---------------------------------- */
+  .faq-item { @apply py-1; }
+  .faq-item summary {
+    @apply flex cursor-pointer list-none items-center justify-between gap-3 py-3 font-sans text-sm font-semibold text-ink;
+    transition: color 0.15s;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '\2304'; /* down caret */
+    @apply shrink-0 text-lg leading-none text-ink-faint;
+    transition: transform 0.2s ease, color 0.15s;
+    transform: translateY(-3px);
+  }
+  .faq-item summary:hover { color: #ff5900; }
+  .faq-item summary:hover::after { color: #ff5900; }
+  .faq-item[open] summary::after { transform: rotate(180deg) translateY(-4px); }
+  .faq-item > p { @apply pb-4 text-sm leading-relaxed text-ink-light; }
+
   /* ---- Markdown prose (rich CFP view) ---------------------------------- */
   /* Scraped CFP markdown carries raw URLs; break them rather than let them
      push the modal into a horizontal scroll. */
